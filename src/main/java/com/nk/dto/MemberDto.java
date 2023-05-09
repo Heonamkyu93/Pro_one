@@ -1,61 +1,76 @@
 package com.nk.dto;
 
 public class MemberDto {
-	private String personId;
-	private String pwd;
-	private String personName;
-	private int age;
-	private String personEmail;
-	private String phoneNumber;
-
-	public void setPersonId(String personId) {
-		this.personId = personId;
-	}
-
-	public String getPersonId() {
-		return personId;
-	}
-
-	public void setPwd(String pwd) {
-		this.pwd = pwd;
-	}
-
-	public String getPwd() {
-		return pwd;
-	}
-
-	public void setPersonName(String personName) {
-		this.personName = personName;
-	}
-
-	public String getPersonName() {
-		return personName;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public int getAge(int age) {
-		return age;
-	}
+	private String peId;
+	private String pePwd;
+	private String peName;
+	private String peMail;
+	private String pePhoneNumber;
+	private String peSequence;
+	private int peAge;
+	private String pePower;
 	
-	public void setPersonEmail(String personEmail) {
-		this.personEmail = personEmail;
-	}
+	
+	
+	public void setPeSequence(String peSequence)
 
-	public String getPersonEmail() {
-		return personEmail;
+	{
+		this.peSequence = peSequence;
 	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
+	public String getPeSequence() {
+		return peSequence;
 	}
 	
 	
+	public void setPeId(String peId) {
+		this.peId = peId;
+	}
+
+	public String getPeId() {
+		return peId;
+	}
+
+	public void setPePwd(String pePwd) {
+		this.pePwd = pePwd;
+	}
+
+	public String getPePwd() {
+		return pePwd;
+	}
+
+	public void setPeName(String peName) {
+		this.peName = peName;
+	}
+
+	public String getPeName() {
+		return peName;
+	}
+	public void setPeAge(int peAge) {
+		this.peAge=peAge;
+	}
+	public int getPeAge() {
+		return peAge;
+	}
+	public void setPeMail(String peMail) {
+		this.peMail = peMail;
+	}
+
+	public String getPeMail() {
+		return peMail;
+	}
+
+	public void setPePhoneNumber (String pePhoneNumber) {
+		this.pePhoneNumber = pePhoneNumber;
+	}
+
+	public String getPePhoneNumber() {
+		return pePhoneNumber;
+	}
+	public void setPePower (String pePower) {
+		this.pePower=pePower;
+	}
+	public String getPePower() {
+		return pePower;
+	}
 
 }
