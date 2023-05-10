@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.nk.service.MemberManager;
 
-@WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert","/memberList" })
+@WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login" })
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -23,8 +23,8 @@ public class HomeController extends HttpServlet {
 		String con = request.getContextPath();
 		String url = uri.substring(con.length());
 		String path = null;
-		int selforedi = 1; // default 값 1이여서 포워드가 default
-		MemberManager mm = new MemberManager(request); // controller에서 코드를 짜면 너무 지저분해저서
+		byte selforedi = 1; // default 값 1이여서 포워드가 default
+		MemberManager mm = new MemberManager(request,response); // controller에서 코드를 짜면 너무 지저분해저서
 
 		switch (url) {
 		case "/index":
@@ -44,6 +44,18 @@ public class HomeController extends HttpServlet {
 				out.print("n");
 			}
 			break;
+		case "/login":
+			// path = ;
+			selforedi = mm.login();   //1이면 로그인 실패  리턴값 스트링으로 수정해야함
+			
+			if (selforedi == 1) {
+				path="index.jsp";
+				break;
+			}else {
+				
+				path="index.jsp";
+				break;
+			}
 
 		case "/memberInsert":
 			path = mm.memberInsert();
@@ -62,9 +74,11 @@ public class HomeController extends HttpServlet {
 			break;
 		}
 
-		if (path != null) {
+		if (path != null && selforedi == 1) {
 			RequestDispatcher dis = request.getRequestDispatcher(path);
 			dis.forward(request, response);
+		} else if(path != null && selforedi ==2) {
+			response.sendRedirect(path);
 		}
 	}
 

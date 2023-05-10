@@ -53,6 +53,6 @@
 
 
 ${re}
-
+${loginch}
 </body>
 </html>

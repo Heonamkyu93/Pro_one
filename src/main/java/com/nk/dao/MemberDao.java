@@ -89,12 +89,14 @@ public class MemberDao {
 			while (rs.next()) {									//mDto 객체가 어디서 생성되는지에 따라 mList에 같은 값만 들어갈수 있으니 조심
 				mDto=new MemberDto();
 				mDto.setPeId(rs.getString("peid"));
+				mDto.setPePwd(rs.getString("pepwd"));
 				mDto.setPeName(rs.getString("pename"));
 				mDto.setPeAge(rs.getInt("peage"));
 				mDto.setPePhoneNumber(rs.getString("pephonenumber"));
 				mDto.setPeMail(rs.getString("peemail"));
 				mDto.setPeSequence(rs.getString("pesequence"));
 				mDto.setPePower(rs.getString("pepower"));
+				
 				mList.add(mDto);
 			}
 			if (mDto.getPeId() != null) {

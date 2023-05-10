@@ -25,24 +25,25 @@
     <div class="col-md-4" style="background-color: blue;"><h1>dddd</h1>
     </div>
     <div class="col-md-4" style="background-color: yellow;">
+   <form action="./login">
     <table border="1">
     <tr>
     <th>아&nbsp;이&nbsp;디&nbsp;:&nbsp;</th>
-    <th><input type="text" maxlength="15"></th>
+    <th><input type="text" maxlength="15"name="peid"></th>
     </tr>
     
     <tr>
     <th>아&nbsp;이&nbsp;디&nbsp;:&nbsp;</th>
-    <th><input type="text" maxlength="15"></th>
+    <th><input type="text" maxlength="15" name="pepwd"></th>
     </tr>
     
     <tr>
-    <th></th>
-     <th></th>
+    <th><input type="submit" value="로그인"></th>
+     <th><input type="button"value="회원가입"></th>
     </tr>
     
     </table>
-   	
+   	</form>
     </div>
     <div class="col-md-4" style="background-color: red;"><h1>dddd</h1>
     </div>
