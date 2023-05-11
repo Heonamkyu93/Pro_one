@@ -24,13 +24,14 @@ public class HomeController extends HttpServlet {
 		String url = uri.substring(con.length());
 		String path = null;
 		byte selforedi = 1; // default 값 1이여서 포워드가 default
-		MemberManager mm = new MemberManager(request,response); // controller에서 코드를 짜면 너무 지저분해저서
+		MemberManager mm = new MemberManager(request, response); // controller에서 코드를 짜면 너무 지저분해저서
 
 		switch (url) {
 		case "/index":
 			path = "index.jsp";
 			break;
 		case "/loginForm":
+			mm.logout();
 			path = "loginForm.jsp";
 			break;
 		case "/joinForm":
@@ -45,18 +46,10 @@ public class HomeController extends HttpServlet {
 			}
 			break;
 		case "/login":
-			// path = ;
-			selforedi = mm.login();   //1이면 로그인 실패  리턴값 스트링으로 수정해야함
-			
-			if (selforedi == 1) {
-				path="index.jsp";
-				break;
-			}else {
-				
-				path="index.jsp";
-				break;
-			}
-
+			path = mm.login();
+			selforedi = 1;
+			//	selforedi = (byte) ((path.equals("index.jsp")) ? 2 : 1); // 1이면 로그인 실패 리턴값 스트링으로 수정해야함
+			break;
 		case "/memberInsert":
 			path = mm.memberInsert();
 			break;
@@ -77,7 +70,7 @@ public class HomeController extends HttpServlet {
 		if (path != null && selforedi == 1) {
 			RequestDispatcher dis = request.getRequestDispatcher(path);
 			dis.forward(request, response);
-		} else if(path != null && selforedi ==2) {
+		} else if (path != null && selforedi == 2) {
 			response.sendRedirect(path);
 		}
 	}

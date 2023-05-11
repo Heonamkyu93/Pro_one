@@ -24,12 +24,10 @@ public class MemberManager {
 		mDto.setPeId(request.getParameter("peid"));
 		mDto.setPePwd(request.getParameter("pepwd"));
 		mDto.setPeName(request.getParameter("pename"));
-		System.out.println(request.getParameter("peage"));
 		mDto.setPeAge(Integer.parseInt(request.getParameter("peage"))); // Integer.parseInt == String 타입의 숫자를 int로 변환
 		mDto.setPeMail(request.getParameter("pemail"));
 		mDto.setPePhoneNumber(request.getParameter("pephonenumber"));
 		boolean re = mDao.memberInsert(mDto);
-		System.out.println("ddd=" + re);
 		if (re) {
 			request.setAttribute("re", "회원가입");
 			return "index.jsp"; // %%%%% 회원가입후 나올 페이지 만들어야함
@@ -63,6 +61,7 @@ public class MemberManager {
 		byte a = 1;
 		String gar = "d";
 		request.setAttribute("mList", makeHtmlList(a, mDao.memberList(a, gar)));
+
 		return "showList.jsp";
 	}
 
@@ -146,40 +145,37 @@ public class MemberManager {
 		else
 			return false;
 
-		
-		
-		
-		
-		
-		
-		
-		
 	}
 
-	public String loginCookie() {			//다른 페이지를 갈때 쿠키여부를 확인해서 로그인상태인지 아닌지를 판단하는 메소드
+	public String loginCookie() { // 다른 페이지를 갈때 쿠키여부를 확인해서 로그인상태인지 아닌지를 판단하는 메소드
 		Cookie[] cList = request.getCookies();
 		byte cookie = 0;
-		
+
 		for (int i = 0; i < cList.length && cList[i].getName() != null; i++) {
-			System.out.println(cList[i].getName());
 			if (cList[i].getName().equals("peid")) {
 				cookie = 1;
 				break;
 			}
 		}
-		String cook = (cookie!=0)?"login":"logout";
+		String cook = (cookie != 0) ? "login" : "logout";
 		return cook;
-		
+
 	}
 
 	public void logout() {
-		
+		Cookie[] cookie = request.getCookies();
+		String coname = "";
+		for (int i = 0; i < cookie.length; i++) {
+			coname = cookie[i].getName();
+			if (coname.equals("peid")) {
+				cookie[i].setMaxAge(0);
+				response.addCookie(cookie[i]);
+			}
+		}
 	}
-	
-	
-	
-	public byte login() {				//입력하는 아이디와 비밀번호가 디비의 정보와 일치하는지 판단하는 메소드  대소문자 구분해야함 오라클이 대소문자 구분함
-		
+
+	public String login() { // 입력하는 아이디와 비밀번호가 디비의 정보와 일치하는지 판단하는 메소드 대소문자 구분해야함 오라클이 대소문자 구분함 로그인시 쿠키삭제후 등록
+		logout();
 		MemberDao mDao = new MemberDao();
 		byte a = 2;
 		String peid = request.getParameter("peid");
@@ -188,12 +184,21 @@ public class MemberManager {
 		if (peid.equals(list.get(0).getPeId()) && pepwd.equals(list.get(0).getPePwd())) {
 			Cookie ck = new Cookie("peid", peid);
 			response.addCookie(ck);
-
-			return 2;
+			return "index.jsp";
 		} else {
 			request.setAttribute("loginch", "실패");
-			return 1;
+			return "loginForm,jsp";
 		}
+
+	}
+
+	public void page() {
+		MemberDao mDao = new MemberDao();
+		int page = 1; // 시작페이지
+		int pageNumber = 10; // 한페이지에 출력할게시물수
+		ArrayList<MemberDto> mList = mDao.memberList((byte) 1, "쓸모없는값");
+		int totalCount = mList.size(); // 전체 게시물 카운트
+		int totalPage = (int) Math.ceil(totalCount / (double) pageNumber);
 
 	}
 
