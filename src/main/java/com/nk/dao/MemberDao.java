@@ -37,13 +37,6 @@ public class MemberDao {
 	public boolean memberInsert(MemberDto mDto) {
 		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1')"; // 테이블 만들때 데이터타입
 		try {
-			System.out.println(mDto.getPeId());
-			System.out.println(mDto.getPePwd());
-			System.out.println(mDto.getPeName());
-			System.out.println(mDto.getPeAge());
-			System.out.println(mDto.getPePhoneNumber());
-			System.out.println(mDto.getPeMail());
-			
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, mDto.getPeId());
 			psmt.setString(2, mDto.getPePwd());
@@ -105,6 +98,17 @@ public class MemberDao {
 		} catch (Exception e) {
 		}
 		return null;
+	}
+
+	public void memberOut(String pwd, String peid) {
+		String sql ="DELETE FROM PEMEMBER WHERE PEID =(?) ON DELETE CASCADE ";  
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1,peid);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	/*

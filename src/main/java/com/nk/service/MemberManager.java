@@ -1,5 +1,7 @@
 package com.nk.service;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 
 import javax.servlet.http.Cookie;
@@ -202,4 +204,25 @@ public class MemberManager {
 
 	}
 
+	public String memberOut() {
+		MemberDao mDao = new MemberDao();
+		String doubleCheck = (login().equals("index.jsp"))? "dd" : "dd";   //아이디와 비밀번호를 다시한번체크 틀릴경우 처리
+		
+		String pwd=request.getParameter("pepwd");
+		String peid=request.getParameter("peid");
+		mDao.memberOut(pwd,peid);
+		
+		
+		
+		return null;
+	}
+
+	public void secure() throws NoSuchAlgorithmException {
+		SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+		
+		
+		
+		
+		
+	}
 }

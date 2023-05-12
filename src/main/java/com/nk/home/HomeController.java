@@ -65,6 +65,9 @@ public class HomeController extends HttpServlet {
 		case "/memberPrivateInfo":
 			path = mm.memberSearch();
 			break;
+		case "/memberOut":
+			path= mm.memberOut();
+			break;
 		}
 
 		if (path != null && selforedi == 1) {

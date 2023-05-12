@@ -51,7 +51,7 @@
 		</div>
 	</nav>
 
-
+<a href="./board">보드</a>
 ${re}
 ${loginch}
 </body>
