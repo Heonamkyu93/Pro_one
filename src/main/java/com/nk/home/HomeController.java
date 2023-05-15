@@ -2,6 +2,7 @@ package com.nk.home;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,10 +10,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
 import com.nk.service.MemberManager;
 
-@WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login" })
+@WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login","/beforeWithdrawalCheck","/withdrawalCheck","/memberInfoUpdate","/memberInfoUpdateFrom" })
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -25,7 +28,7 @@ public class HomeController extends HttpServlet {
 		String path = null;
 		byte selforedi = 1; // default 값 1이여서 포워드가 default
 		MemberManager mm = new MemberManager(request, response); // controller에서 코드를 짜면 너무 지저분해저서
-
+		
 		switch (url) {
 		case "/index":
 			path = "index.jsp";
@@ -53,9 +56,6 @@ public class HomeController extends HttpServlet {
 		case "/memberInsert":
 			path = mm.memberInsert();
 			break;
-		case "/memberLogin":
-			path = mm.memberLogin();
-			break;
 		case "/memberList":
 			path = mm.memberList();
 			break;
@@ -65,8 +65,17 @@ public class HomeController extends HttpServlet {
 		case "/memberPrivateInfo":
 			path = mm.memberSearch();
 			break;
-		case "/memberOut":
-			path= mm.memberOut();
+		case "/beforeWithdrawalCheck":
+			path  = "beforeWithdrawalCheck.jsp";
+			break;
+		case "/withdrawalCheck":
+			path  = mm.WithdrawalCheck();
+			break;
+		case "/memberInfoUpdateFrom":
+			path=mm.memberInfoUpdateForm();
+			break;
+		case "/memberInfoUpdate":
+			mm.memberInfoUpdate();
 			break;
 		}
 

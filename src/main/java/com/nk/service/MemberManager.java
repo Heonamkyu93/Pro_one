@@ -1,12 +1,17 @@
 package com.nk.service;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
 import com.nk.dao.MemberDao;
 import com.nk.dto.MemberDto;
@@ -23,8 +28,11 @@ public class MemberManager {
 	public String memberInsert() { // 멤버 등록 메소드
 		MemberDto mDto = new MemberDto();
 		MemberDao mDao = new MemberDao();
+		String pepwd = request.getParameter("pepwd");
+		String[] userInfo = securePwd(pepwd);
+		mDto.setPeSalt(userInfo[0]);
+		mDto.setPePwd(userInfo[1]);
 		mDto.setPeId(request.getParameter("peid"));
-		mDto.setPePwd(request.getParameter("pepwd"));
 		mDto.setPeName(request.getParameter("pename"));
 		mDto.setPeAge(Integer.parseInt(request.getParameter("peage"))); // Integer.parseInt == String 타입의 숫자를 int로 변환
 		mDto.setPeMail(request.getParameter("pemail"));
@@ -37,21 +45,6 @@ public class MemberManager {
 			request.setAttribute("re", "회원가입실패"); // %%%% 나중에 jsp에 값 찍어야함
 			return null;
 		}
-	}
-
-	public String memberLogin() { // ######쿠키에 정보 등록한거랑 비교 사용안함
-		MemberDto mDto = new MemberDto();
-		MemberDao mDao = new MemberDao();
-		mDto.setPeId(request.getParameter("PeId"));
-		mDto.setPePwd(request.getParameter("pePwd"));
-		int a = mDao.memberLogin(mDto);
-		if (a == 1) {
-			// 로그인 성공
-		} else {
-			// 로그인 실패
-		}
-
-		return null;
 	}
 
 	public String memberList() { // makehtmllist 메소드와 DAO클래스의 memberList 메소드 재활용을위해 바이트로 어떤 메소드의 호출인지 변별
@@ -152,7 +145,6 @@ public class MemberManager {
 	public String loginCookie() { // 다른 페이지를 갈때 쿠키여부를 확인해서 로그인상태인지 아닌지를 판단하는 메소드
 		Cookie[] cList = request.getCookies();
 		byte cookie = 0;
-
 		for (int i = 0; i < cList.length && cList[i].getName() != null; i++) {
 			if (cList[i].getName().equals("peid")) {
 				cookie = 1;
@@ -167,9 +159,11 @@ public class MemberManager {
 	public void logout() {
 		Cookie[] cookie = request.getCookies();
 		String coname = "";
+		HttpSession session = request.getSession();
 		for (int i = 0; i < cookie.length; i++) {
 			coname = cookie[i].getName();
 			if (coname.equals("peid")) {
+				session.removeAttribute("peid");
 				cookie[i].setMaxAge(0);
 				response.addCookie(cookie[i]);
 			}
@@ -179,11 +173,21 @@ public class MemberManager {
 	public String login() { // 입력하는 아이디와 비밀번호가 디비의 정보와 일치하는지 판단하는 메소드 대소문자 구분해야함 오라클이 대소문자 구분함 로그인시 쿠키삭제후 등록
 		logout();
 		MemberDao mDao = new MemberDao();
-		byte a = 2;
 		String peid = request.getParameter("peid");
 		String pepwd = request.getParameter("pepwd");
+		byte a = 2;
 		ArrayList<MemberDto> list = mDao.memberList(a, peid);
+		if(list.get(0).getPeId()==null) {
+			request.setAttribute("loginch", "실패");
+			return "loginForm,jsp";
+		}
+		
+		String sal = list.get(0).getPeSalt();
+		String[] userInfo = securePwd(pepwd, sal);
+		pepwd = userInfo[1];
 		if (peid.equals(list.get(0).getPeId()) && pepwd.equals(list.get(0).getPePwd())) {
+			HttpSession session = request.getSession();
+			session.setAttribute("peid", peid);
 			Cookie ck = new Cookie("peid", peid);
 			response.addCookie(ck);
 			return "index.jsp";
@@ -192,6 +196,69 @@ public class MemberManager {
 			return "loginForm,jsp";
 		}
 
+	}
+
+	private String[] securePwd(String pepwd, String sal) { // 로그인시 이용
+		String pePwd = pepwd;
+		String hex = "";
+		String userInfo[] = new String[2];
+		String hexSalt = "";
+		// "SHA1PRNG"은 알고리즘 이름
+		SecureRandom random;
+		try {
+			random = SecureRandom.getInstance("SHA1PRNG");
+			byte[] bytes = new byte[16];
+			random.nextBytes(bytes);
+			// SALT 생성
+			String salt = sal;
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			// 평문 암호화
+			md.update(pePwd.getBytes());
+			hex = String.format("%064x", new BigInteger(1, md.digest()));
+
+			// 평문암호화 + 솔트
+			hexSalt = hex + salt;
+			md.update(hexSalt.getBytes());
+			hex = String.format("%064x", new BigInteger(1, md.digest()));
+
+			userInfo[0] = salt;
+			userInfo[1] = hex;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return userInfo;
+
+	}
+
+	public String[] securePwd(String pwd) { // db에 저장되는 값은 salt , (salt+해싱)을 해싱한 값 회원가입시 이용
+		String pepwd = pwd;
+		String hex = "";
+		String userInfo[] = new String[2];
+		String hexSalt = "";
+		// "SHA1PRNG"은 알고리즘 이름
+		SecureRandom random;
+		try {
+			random = SecureRandom.getInstance("SHA1PRNG");
+			byte[] bytes = new byte[16];
+			random.nextBytes(bytes);
+			// SALT 생성
+			String salt = new String(Base64.getEncoder().encode(bytes));
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			// 평문 암호화
+			md.update(pepwd.getBytes());
+			hex = String.format("%064x", new BigInteger(1, md.digest()));
+
+			// 평문암호화 + 솔트
+			hexSalt = hex + salt;
+			md.update(hexSalt.getBytes());
+			hex = String.format("%064x", new BigInteger(1, md.digest()));
+
+			userInfo[0] = salt;
+			userInfo[1] = hex;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return userInfo;
 	}
 
 	public void page() {
@@ -204,25 +271,48 @@ public class MemberManager {
 
 	}
 
-	public String memberOut() {
+
+	public String WithdrawalCheck() { // 회원탈퇴메소드
 		MemberDao mDao = new MemberDao();
-		String doubleCheck = (login().equals("index.jsp"))? "dd" : "dd";   //아이디와 비밀번호를 다시한번체크 틀릴경우 처리
+		String peid = request.getParameter("peid");
+		String pepwd = request.getParameter("pepwd");
+		byte a = 2;
+		ArrayList<MemberDto> list = mDao.memberList(a, peid);
+		String sal = list.get(0).getPeSalt();
+		String[] userInfo = securePwd(pepwd, sal);
+		String re = "beforeWithdrawalCheck.jsp";
+		pepwd = userInfo[1];
+		if(pepwd.equals(list.get(0).getPePwd())) { //두값이 같으면 회원탈퇴처리
+		re=mDao.WithdrawalCheck(peid,pepwd);
+		return re;
+		}else { //틀리다면 beforewi 로다시 
+			return re;
+		}
 		
-		String pwd=request.getParameter("pepwd");
-		String peid=request.getParameter("peid");
-		mDao.memberOut(pwd,peid);
+		
+	}
+	
+	
+	public void memberInfoUpdate() {
 		
 		
 		
-		return null;
+		
 	}
 
-	public void secure() throws NoSuchAlgorithmException {
-		SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-		
-		
-		
-		
-		
+	public String memberInfoUpdateForm() {
+		MemberDao mDao = new MemberDao();
+		HttpSession session = request.getSession();
+		String peid=(String) session.getAttribute("peid");
+		byte a = 2;
+		ArrayList<MemberDto> list=mDao.memberList(a, peid);
+		request.setAttribute("peid",list.get(0).getPeId());
+		request.setAttribute("pename",list.get(0).getPeName());
+		request.setAttribute("pephonenumber",list.get(0).getPePhoneNumber());
+		request.setAttribute("peemail",list.get(0).getPeMail());
+		return "personalInfo.jsp";
+		//mDao.memberInfoUpdateForm(peid);
 	}
+
+
 }

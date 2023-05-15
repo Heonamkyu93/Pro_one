@@ -50,7 +50,7 @@
 							<tr align="left">
 								<td><font size=4>&nbsp;아&nbsp;이&nbsp;디&nbsp;:&nbsp;</font></td>
 								<td><input type="text" class="form-control" name="peid"
-									id="peid" name="peid" maxlength="15"></td>
+									id="peid" name="peid" maxlength="15" onchange="change();"></td>
 								<td><input type="button" value="중복확인"
 									onclick="dupliCheck();"></td>
 								<td></td>
@@ -110,6 +110,12 @@
 		</div>
 	</div>
 	<script>
+		var duplch = 1;
+		
+		function change(){
+			duplch = 1;
+		}
+		
 		function dupliCheck() { // 아이디 중복체크 함수
 			var peid = document.getElementById("peid").value;
 			var xhr = new XMLHttpRequest();
@@ -117,6 +123,9 @@
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4 && xhr.status == 200) {
 					alert(xhr.responseText);
+					if(xhr.responseText==='n'){
+						duplch =2;						
+					}
 				}
 			}
 			xhr.send();
@@ -162,6 +171,10 @@
 			}else if(peage.value.length==0 ){
 				alert("나이를 입력해주세요.");
 				document.getElementById('peage').focus;
+				return false;
+			}else if(duplch===1){
+				alert("ID중복체크를 해주세요.");
+				document.getElementById('peid').focus;
 				return false;
 			}
 		}

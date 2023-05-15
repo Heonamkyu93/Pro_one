@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.nk.dto.MemberDto;
 
@@ -35,7 +36,7 @@ public class MemberDao {
 	}
 
 	public boolean memberInsert(MemberDto mDto) {
-		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1')"; // 테이블 만들때 데이터타입
+		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','1',?)"; // 테이블 만들때 데이터타입
 		try {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, mDto.getPeId());
@@ -44,6 +45,7 @@ public class MemberDao {
 			psmt.setInt(4, mDto.getPeAge());
 			psmt.setString(5, mDto.getPePhoneNumber());
 			psmt.setString(6, mDto.getPeMail());
+			psmt.setString(7, mDto.getPeSalt());
 			int re = psmt.executeUpdate();
 			if (re != 0) {
 				return true;
@@ -71,14 +73,14 @@ public class MemberDao {
 	}
 
 	public ArrayList<MemberDto> memberList(byte a, String parameter) {		//인자가 1일경우 단순 select문
-		String sql = (a == 1) ? "SELECT * FROM PEMEMBER" : "SELECT * FROM PEMEMBER WHERE PEID = (?)";
+		String sql = (a == 1) ? "SELECT * FROM PEMEMBER WHERE PESTATUS=1" : "SELECT * FROM PEMEMBER WHERE PEID = (?)";
 		ArrayList<MemberDto> mList = new ArrayList<>();
 		MemberDto mDto =null;
 		try {
 			psmt = con.prepareStatement(sql);
 			if (a != 1) {				//1이 아닐경우 아이디로 찾는경우라 ?에 값을 넣는 작업이 필요하다
 				psmt.setString(1, parameter);}
-			rs = psmt.executeQuery();
+				rs = psmt.executeQuery();
 			while (rs.next()) {									//mDto 객체가 어디서 생성되는지에 따라 mList에 같은 값만 들어갈수 있으니 조심
 				mDto=new MemberDto();
 				mDto.setPeId(rs.getString("peid"));
@@ -89,7 +91,7 @@ public class MemberDao {
 				mDto.setPeMail(rs.getString("peemail"));
 				mDto.setPeSequence(rs.getString("pesequence"));
 				mDto.setPePower(rs.getString("pepower"));
-				
+				mDto.setPeSalt(rs.getString("pesalt"));
 				mList.add(mDto);
 			}
 			if (mDto.getPeId() != null) {
@@ -100,16 +102,46 @@ public class MemberDao {
 		return null;
 	}
 
-	public void memberOut(String pwd, String peid) {
-		String sql ="DELETE FROM PEMEMBER WHERE PEID =(?) ON DELETE CASCADE ";  
+	public String WithdrawalCheck(String peid, String pepwd) {
+		String sql ="UPDATE PEMEMBER SET PENAME= '탈퇴' , PEAGE =0 , PEPHONENUMBER ='탈퇴',PEEMAIL='탈퇴',PESTATUS= 0, PESALT ='탈퇴' WHERE PEID=? AND PEPWD=?  ";
 		try {
-			psmt=con.prepareStatement(sql);
-			psmt.setString(1,peid);
+			psmt = con.prepareStatement(sql);
+			psmt.setString(1, peid);
+			psmt.setString(2, pepwd);
+			int re=psmt.executeUpdate();
+			if(re != 0) {
+				return "index.jsp";
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
+		return "beforeWithdrawalCheck.jsp";
+		
+		
+		
+		
+		
+		
+		
 	}
+
+	/*
+	 * public void memberInfoUpdateForm(String peid) { String sql =
+	 * "SELECT * FROM PEMEMBER WHERE PEID=?";
+	 * 
+	 * try { psmt=con.prepareStatement(sql); psmt.setString(1,peid);
+	 * rs=psmt.executeQuery(); HashMap<String,String> hmap = new HashMap<>();
+	 * while(rs.next()) { hmap.put("peid",rs.getString("peid"));
+	 * hmap.put("pename",rs.getString("pename"));
+	 * hmap.put("pephonenumber",rs.getString("pephonenumber"));
+	 * hmap.put("peemail",rs.getString("peemail")); } } catch (SQLException e) {
+	 * e.printStackTrace(); }
+	 * 
+	 * 
+	 * }
+	 */
+
 
 	/*
 	 * public void memberSearch(String parameter) { String sql =

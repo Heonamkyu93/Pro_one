@@ -7,6 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
+<a href="./beforeWithdrawalCheck">sadssad</a>
+<a href="./memberInfoUpdateFrom">sadssad</a>
 ${mList}
 </body>
 </html>

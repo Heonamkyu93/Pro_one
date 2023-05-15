@@ -9,8 +9,15 @@ public class MemberDto {
 	private String peSequence;
 	private int peAge;
 	private String pePower;
+	private String peSalt;
 	
 	
+	public void setPeSalt(String peSalt) {
+		this.peSalt = peSalt;
+	}
+	public String getPeSalt() {
+		return peSalt;
+	}
 	
 	public void setPeSequence(String peSequence)
 
