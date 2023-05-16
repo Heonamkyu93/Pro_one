@@ -7,12 +7,12 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<form onsubmit="return valch();">
+	<form action="./memberInfoUpdate"  onsubmit="return valch();" method="post">
 		<table border="1">
 			<tr>
 				<th colspan="2">아이디:</th>
 				<th><input type="text" readonly="readonly" id="peid" value=${peid} name='peid'></th>
-				<th id='test'></th>
+				<th hidden="hi"></th>
 				<th hidden="hi"></th>
 			</tr>
 
@@ -65,18 +65,20 @@
 	function valch(){
 		if(pename.value.length ===0){
 			pename.focus;
-			test.innerText= "dddd";
-			alert("d");
+		//	test.innerText= "dddd";
+			alert("이름을 입력해주세요");
 			return false;
 		}
-		else if(pephonenumber.value.length===0){
+		else if(pephonenumber.value.length ===0){
+			alert('핸드폰 번호를 입력해주세요');
 			pephonenumber.focus;
 			return false;
 		}
-		else if(peemail.value.length===0){
+	/* 	else if(peemail.value.length ===0){
+			alert('이메일을 입력해주세요');
 			peemail.focus;
 			return false;
-		}
+		} */
 		
 	}
 	

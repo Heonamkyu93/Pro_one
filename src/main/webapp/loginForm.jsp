@@ -46,6 +46,7 @@
    	</form>
     </div>
     <div class="col-md-4" style="background-color: red;"><h1>dddd</h1>
+    ${loginch}
     </div>
   </div>
 </div>

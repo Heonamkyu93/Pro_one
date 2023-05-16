@@ -2,7 +2,6 @@ package com.nk.home;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,25 +9,25 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 
 import com.nk.service.MemberManager;
 
-@WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login","/beforeWithdrawalCheck","/withdrawalCheck","/memberInfoUpdate","/memberInfoUpdateFrom" })
+@WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login",
+		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup" })
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("utf-8"); // 한글 깨지는걸 방지하기 위해 utf-8로 인코딩
+		response.setCharacterEncoding("utf-8");
 		String uri = request.getRequestURI();
 		String con = request.getContextPath();
 		String url = uri.substring(con.length());
 		String path = null;
 		byte selforedi = 1; // default 값 1이여서 포워드가 default
 		MemberManager mm = new MemberManager(request, response); // controller에서 코드를 짜면 너무 지저분해저서
-		
+
 		switch (url) {
 		case "/index":
 			path = "index.jsp";
@@ -41,17 +40,13 @@ public class HomeController extends HttpServlet {
 			path = "joinForm.jsp";
 			break;
 		case "/dupliCheck":
-			PrintWriter out = response.getWriter();
-			if (mm.dupliCheck()) {
-				out.print("y");
-			} else {
-				out.print("n");
-			}
+			mm.dupliCheck();
 			break;
 		case "/login":
 			path = mm.login();
-			selforedi = 1;
-			//	selforedi = (byte) ((path.equals("index.jsp")) ? 2 : 1); // 1이면 로그인 실패 리턴값 스트링으로 수정해야함
+			selforedi = 2;
+			// selforedi = (byte) ((path.equals("index.jsp")) ? 2 : 1); // 1이면 로그인 실패 리턴값
+			// 스트링으로 수정해야함
 			break;
 		case "/memberInsert":
 			path = mm.memberInsert();
@@ -66,16 +61,21 @@ public class HomeController extends HttpServlet {
 			path = mm.memberSearch();
 			break;
 		case "/beforeWithdrawalCheck":
-			path  = "beforeWithdrawalCheck.jsp";
+			path = "beforeWithdrawalCheck.jsp";
 			break;
 		case "/withdrawalCheck":
-			path  = mm.WithdrawalCheck();
+			path = mm.WithdrawalCheck();
 			break;
 		case "/memberInfoUpdateFrom":
-			path=mm.memberInfoUpdateForm();
+			path = mm.memberInfoUpdateForm();
 			break;
 		case "/memberInfoUpdate":
-			mm.memberInfoUpdate();
+			path = mm.memberInfoUpdate();
+			selforedi = 2;
+			break;
+		case "/emaildup":
+			mm.emaildup();
+
 			break;
 		}
 

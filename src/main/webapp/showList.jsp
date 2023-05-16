@@ -7,8 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-<a href="./beforeWithdrawalCheck">sadssad</a>
-<a href="./memberInfoUpdateFrom">sadssad</a>
+<a href="./beforeWithdrawalCheck">회원탈퇴</a>
+<a href="./memberInfoUpdateFrom">개인정보</a>
 ${mList}
 </body>
 </html>

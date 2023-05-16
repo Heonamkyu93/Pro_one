@@ -1,5 +1,7 @@
 package com.nk.service;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -7,11 +9,11 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
 
+import javax.mail.PasswordAuthentication;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 
 import com.nk.dao.MemberDao;
 import com.nk.dto.MemberDto;
@@ -73,15 +75,11 @@ public class MemberManager {
 		sb.append("<th>");
 		sb.append("이름");
 		sb.append("</th>");
-		sb.append("<th>");
-		sb.append("나이");
-		sb.append("</th>");
-		sb.append("<th>");
-		sb.append("연락처");
-		sb.append("</th>");
-		sb.append("<th>");
-		sb.append("이메일");
-		sb.append("</th>");
+		/*
+		 * sb.append("<th>"); sb.append("나이"); sb.append("</th>"); sb.append("<th>");
+		 * sb.append("연락처"); sb.append("</th>"); sb.append("<th>"); sb.append("이메일");
+		 * sb.append("</th>");
+		 */
 		sb.append("</tr>");
 		for (int i = 0; i < mList.size(); i++) {
 			sb.append("<tr>");
@@ -89,24 +87,21 @@ public class MemberManager {
 			sb.append(mList.get(i).getPeSequence());
 			sb.append("</th>");
 			sb.append("<th>");
-			sb.append("<a href='./memberPrivateInfo?peid='");
+			sb.append("<a href='./memberInfoUpdateFrom?peid=");
 			sb.append(mList.get(i).getPeId());
-			sb.append(">");
+			sb.append("'>");
 			sb.append(mList.get(i).getPeId());
 			sb.append("</a>");
 			sb.append("</th>");
 			sb.append("<th>");
 			sb.append(mList.get(i).getPeName());
 			sb.append("</th>");
-			sb.append("<th>");
-			sb.append(mList.get(i).getPeAge());
-			sb.append("</th>");
-			sb.append("<th>");
-			sb.append(mList.get(i).getPePhoneNumber());
-			sb.append("</th>");
-			sb.append("<th>");
-			sb.append(mList.get(i).getPeMail());
-			sb.append("</th>");
+			/*
+			 * sb.append("<th>"); sb.append(mList.get(i).getPeAge()); sb.append("</th>");
+			 * sb.append("<th>"); sb.append(mList.get(i).getPePhoneNumber());
+			 * sb.append("</th>"); sb.append("<th>"); sb.append(mList.get(i).getPeMail());
+			 * sb.append("</th>");
+			 */
 			if (a == 2) { // 나중에 위에 있는 이메일 전화번호 삭제리스트에서 어느정도 정보를 보여주고 아이디를 클릭했을때 모든정보를 보여주려고 메소드 재활용을 위해
 							// a바이트로 변별
 				sb.append("<th>");
@@ -132,13 +127,14 @@ public class MemberManager {
 		return null;
 	}
 
-	public boolean dupliCheck() { // 회원가입시 아이디 중복체크 ajax 메소드
+	public void dupliCheck() throws IOException { // 회원가입시 아이디 중복체크 ajax 메소드
+		PrintWriter out = response.getWriter(); 
 		MemberDao mDao = new MemberDao();
 		byte a = 2;
 		if (mDao.memberList(a, request.getParameter("peid")) != null)
-			return true;
+			out.print("y");
 		else
-			return false;
+			out.print("n");
 
 	}
 
@@ -177,11 +173,11 @@ public class MemberManager {
 		String pepwd = request.getParameter("pepwd");
 		byte a = 2;
 		ArrayList<MemberDto> list = mDao.memberList(a, peid);
-		if(list.get(0).getPeId()==null) {
+		if (list == null) {
 			request.setAttribute("loginch", "실패");
-			return "loginForm,jsp";
+			return "loginForm.jsp";
 		}
-		
+
 		String sal = list.get(0).getPeSalt();
 		String[] userInfo = securePwd(pepwd, sal);
 		pepwd = userInfo[1];
@@ -193,7 +189,7 @@ public class MemberManager {
 			return "index.jsp";
 		} else {
 			request.setAttribute("loginch", "실패");
-			return "loginForm,jsp";
+			return "loginForm.jsp";
 		}
 
 	}
@@ -261,16 +257,14 @@ public class MemberManager {
 		return userInfo;
 	}
 
-	public void page() {
-		MemberDao mDao = new MemberDao();
-		int page = 1; // 시작페이지
-		int pageNumber = 10; // 한페이지에 출력할게시물수
-		ArrayList<MemberDto> mList = mDao.memberList((byte) 1, "쓸모없는값");
-		int totalCount = mList.size(); // 전체 게시물 카운트
-		int totalPage = (int) Math.ceil(totalCount / (double) pageNumber);
-
-	}
-
+	/*
+	 * public void page() { MemberDao mDao = new MemberDao(); int page = 1; // 시작페이지
+	 * int pageNumber = 10; // 한페이지에 출력할게시물수 ArrayList<MemberDto> mList =
+	 * mDao.memberList((byte) 1, "쓸모없는값"); int totalCount = mList.size(); // 전체 게시물
+	 * 카운트 int totalPage = (int) Math.ceil(totalCount / (double) pageNumber);
+	 * 
+	 * }
+	 */
 
 	public String WithdrawalCheck() { // 회원탈퇴메소드
 		MemberDao mDao = new MemberDao();
@@ -282,37 +276,78 @@ public class MemberManager {
 		String[] userInfo = securePwd(pepwd, sal);
 		String re = "beforeWithdrawalCheck.jsp";
 		pepwd = userInfo[1];
-		if(pepwd.equals(list.get(0).getPePwd())) { //두값이 같으면 회원탈퇴처리
-		re=mDao.WithdrawalCheck(peid,pepwd);
-		return re;
-		}else { //틀리다면 beforewi 로다시 
+		if (pepwd.equals(list.get(0).getPePwd())) { // 두값이 같으면 회원탈퇴처리
+			re = mDao.WithdrawalCheck(peid, pepwd);
+			return re;
+		} else { // 틀리다면 beforewi 로다시
 			return re;
 		}
-		
-		
+
 	}
-	
-	
-	public void memberInfoUpdate() {
-		
-		
-		
-		
+
+	public String memberInfoUpdate() {
+		MemberDao mDao = new MemberDao();
+		MemberDto mDto = new MemberDto();
+		mDto.setPeId(request.getParameter("peid"));
+		mDto.setPeName(request.getParameter("pename"));
+		mDto.setPePhoneNumber(request.getParameter("pephonenumber"));
+		mDto.setPeMail(request.getParameter("peemail"));
+
+		boolean re = mDao.memberInfoUpdate(mDto);
+		if (re) {
+			return "index.jsp";
+		} else {
+			return"personalInfo.jsp";
+		}
+
 	}
 
 	public String memberInfoUpdateForm() {
 		MemberDao mDao = new MemberDao();
-		HttpSession session = request.getSession();
-		String peid=(String) session.getAttribute("peid");
+		String peid = null;
+		if (request.getParameter("peid") != null) {
+			peid = request.getParameter("peid");
+		} else {
+			HttpSession session = request.getSession();
+			peid = (String) session.getAttribute("peid");
+		}
 		byte a = 2;
-		ArrayList<MemberDto> list=mDao.memberList(a, peid);
-		request.setAttribute("peid",list.get(0).getPeId());
-		request.setAttribute("pename",list.get(0).getPeName());
-		request.setAttribute("pephonenumber",list.get(0).getPePhoneNumber());
-		request.setAttribute("peemail",list.get(0).getPeMail());
+		ArrayList<MemberDto> list = mDao.memberList(a, peid);
+		request.setAttribute("peid", list.get(0).getPeId());
+		request.setAttribute("pename", list.get(0).getPeName());
+		request.setAttribute("pephonenumber", list.get(0).getPePhoneNumber());
+		request.setAttribute("peemail", list.get(0).getPeMail());
 		return "personalInfo.jsp";
-		//mDao.memberInfoUpdateForm(peid);
+		// mDao.memberInfoUpdateForm(peid);
+	}
+	
+	public void resetPwd() {
+	}
+	
+	protected PasswordAuthentication getPasswordAuthentication() {
+		return new PasswordAuthentication("projectproonetest@gmail.com","dhponnucpfrmrquw");
+		//dhponnucpfrmrquw
+	}
+	public void mail() {
+		
+		
+		
+		
+		
 	}
 
+	public void emaildup() throws IOException {
+		MemberDao mDao = new MemberDao();
+		String pemail = request.getParameter("pemail");
+		PrintWriter pw = response.getWriter();
+		boolean re= mDao.emaildup(pemail);
+		response.setCharacterEncoding("utf-8");
+		if(re) {
+			pw.print("중복된 이메일이 존재합니다.");
+				
+		}else {
+			pw.print("중복된 이메일이 없습니다.");
+		}
+	}
 
 }

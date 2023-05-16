@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.nk.dto.MemberDto;
 
@@ -126,6 +125,75 @@ public class MemberDao {
 		
 	}
 
+
+	public boolean memberInfoUpdate(MemberDto mDto) {
+		String sql ="UPDATE PEMEMBER SET PENAME = ? , PEPHONENUMBER=?,PEEMAIL=? WHERE PEID=?";
+		
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, mDto.getPeName());
+			psmt.setString(2, mDto.getPePhoneNumber());
+			psmt.setString(3, mDto.getPeMail());
+			psmt.setString(4, mDto.getPeId());
+			int re=psmt.executeUpdate();
+			if(re!=0) {
+				return true;
+			}
+			
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return false;
+		
+	}
+
+	public boolean emaildup(String pemail) {
+		String sql="SELECT PEEMAIL FROM PEMEMBER WHERE PEEMAIL=? ";
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, pemail);
+			rs=psmt.executeQuery();
+			if(rs.next()) {
+				return true;
+			}else {
+				return false;
+			}
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/*
 	 * public void memberInfoUpdateForm(String peid) { String sql =
 	 * "SELECT * FROM PEMEMBER WHERE PEID=?";
