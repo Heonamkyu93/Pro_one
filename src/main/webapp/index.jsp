@@ -50,7 +50,7 @@
 			</div>
 		</div>
 	</nav>
-
+<a href="./tes">a메</a>
 <a href="./board">보드</a>
 ${re}
 ${loginch}

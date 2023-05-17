@@ -6,6 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Properties;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import com.nk.dto.MemberDto;
 
@@ -71,17 +80,18 @@ public class MemberDao {
 		return 2;
 	}
 
-	public ArrayList<MemberDto> memberList(byte a, String parameter) {		//인자가 1일경우 단순 select문
+	public ArrayList<MemberDto> memberList(byte a, String parameter) { // 인자가 1일경우 단순 select문
 		String sql = (a == 1) ? "SELECT * FROM PEMEMBER WHERE PESTATUS=1" : "SELECT * FROM PEMEMBER WHERE PEID = (?)";
 		ArrayList<MemberDto> mList = new ArrayList<>();
-		MemberDto mDto =null;
+		MemberDto mDto = null;
 		try {
 			psmt = con.prepareStatement(sql);
-			if (a != 1) {				//1이 아닐경우 아이디로 찾는경우라 ?에 값을 넣는 작업이 필요하다
-				psmt.setString(1, parameter);}
-				rs = psmt.executeQuery();
-			while (rs.next()) {									//mDto 객체가 어디서 생성되는지에 따라 mList에 같은 값만 들어갈수 있으니 조심
-				mDto=new MemberDto();
+			if (a != 1) { // 1이 아닐경우 아이디로 찾는경우라 ?에 값을 넣는 작업이 필요하다
+				psmt.setString(1, parameter);
+			}
+			rs = psmt.executeQuery();
+			while (rs.next()) { // mDto 객체가 어디서 생성되는지에 따라 mList에 같은 값만 들어갈수 있으니 조심
+				mDto = new MemberDto();
 				mDto.setPeId(rs.getString("peid"));
 				mDto.setPePwd(rs.getString("pepwd"));
 				mDto.setPeName(rs.getString("pename"));
@@ -91,6 +101,7 @@ public class MemberDao {
 				mDto.setPeSequence(rs.getString("pesequence"));
 				mDto.setPePower(rs.getString("pepower"));
 				mDto.setPeSalt(rs.getString("pesalt"));
+				mDto.setPestatus(rs.getString("pestatus"));
 				mList.add(mDto);
 			}
 			if (mDto.getPeId() != null) {
@@ -102,98 +113,64 @@ public class MemberDao {
 	}
 
 	public String WithdrawalCheck(String peid, String pepwd) {
-		String sql ="UPDATE PEMEMBER SET PENAME= '탈퇴' , PEAGE =0 , PEPHONENUMBER ='탈퇴',PEEMAIL='탈퇴',PESTATUS= 0, PESALT ='탈퇴' WHERE PEID=? AND PEPWD=?  ";
+		String sql = "UPDATE PEMEMBER SET PENAME= '탈퇴' , PEAGE =0 , PEPHONENUMBER ='탈퇴',PEEMAIL='탈퇴',PESTATUS= 0, PESALT ='탈퇴' WHERE PEID=? AND PEPWD=?  ";
 		try {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, peid);
 			psmt.setString(2, pepwd);
-			int re=psmt.executeUpdate();
-			if(re != 0) {
+			int re = psmt.executeUpdate();
+			if (re != 0) {
 				return "index.jsp";
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return "beforeWithdrawalCheck.jsp";
-		
-		
-		
-		
-		
-		
-		
+
 	}
 
-
 	public boolean memberInfoUpdate(MemberDto mDto) {
-		String sql ="UPDATE PEMEMBER SET PENAME = ? , PEPHONENUMBER=?,PEEMAIL=? WHERE PEID=?";
-		
+		String sql = "UPDATE PEMEMBER SET PENAME = ? , PEPHONENUMBER=?,PEEMAIL=? WHERE PEID=?";
+
 		try {
-			psmt=con.prepareStatement(sql);
+			psmt = con.prepareStatement(sql);
 			psmt.setString(1, mDto.getPeName());
 			psmt.setString(2, mDto.getPePhoneNumber());
 			psmt.setString(3, mDto.getPeMail());
 			psmt.setString(4, mDto.getPeId());
-			int re=psmt.executeUpdate();
-			if(re!=0) {
+			int re = psmt.executeUpdate();
+			if (re != 0) {
 				return true;
 			}
-			
-			
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		
+
 		return false;
-		
+
 	}
 
 	public boolean emaildup(String pemail) {
-		String sql="SELECT PEEMAIL FROM PEMEMBER WHERE PEEMAIL=? ";
+		String sql = "SELECT PEEMAIL FROM PEMEMBER WHERE PEEMAIL=? ";
 		try {
-			psmt=con.prepareStatement(sql);
+			psmt = con.prepareStatement(sql);
 			psmt.setString(1, pemail);
-			rs=psmt.executeQuery();
-			if(rs.next()) {
+			rs = psmt.executeQuery();
+			if (rs.next()) {
 				return true;
-			}else {
+			} else {
 				return false;
 			}
-			
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
+	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	/*
 	 * public void memberInfoUpdateForm(String peid) { String sql =
 	 * "SELECT * FROM PEMEMBER WHERE PEID=?";
@@ -209,7 +186,6 @@ public class MemberDao {
 	 * 
 	 * }
 	 */
-
 
 	/*
 	 * public void memberSearch(String parameter) { String sql =

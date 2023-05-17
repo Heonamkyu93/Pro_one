@@ -2,18 +2,21 @@ package com.nk.service;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Base64;
+import java.util.Properties;
 
+import javax.mail.Authenticator;
+import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 
 import com.nk.dao.MemberDao;
 import com.nk.dto.MemberDto;
@@ -30,8 +33,9 @@ public class MemberManager {
 	public String memberInsert() { // 멤버 등록 메소드
 		MemberDto mDto = new MemberDto();
 		MemberDao mDao = new MemberDao();
+		Secure sr = new Secure();
 		String pepwd = request.getParameter("pepwd");
-		String[] userInfo = securePwd(pepwd);
+		String[] userInfo = sr.securePwd(pepwd);
 		mDto.setPeSalt(userInfo[0]);
 		mDto.setPePwd(userInfo[1]);
 		mDto.setPeId(request.getParameter("peid"));
@@ -128,7 +132,7 @@ public class MemberManager {
 	}
 
 	public void dupliCheck() throws IOException { // 회원가입시 아이디 중복체크 ajax 메소드
-		PrintWriter out = response.getWriter(); 
+		PrintWriter out = response.getWriter();
 		MemberDao mDao = new MemberDao();
 		byte a = 2;
 		if (mDao.memberList(a, request.getParameter("peid")) != null)
@@ -169,6 +173,7 @@ public class MemberManager {
 	public String login() { // 입력하는 아이디와 비밀번호가 디비의 정보와 일치하는지 판단하는 메소드 대소문자 구분해야함 오라클이 대소문자 구분함 로그인시 쿠키삭제후 등록
 		logout();
 		MemberDao mDao = new MemberDao();
+		Secure sr = new Secure();
 		String peid = request.getParameter("peid");
 		String pepwd = request.getParameter("pepwd");
 		byte a = 2;
@@ -179,8 +184,11 @@ public class MemberManager {
 		}
 
 		String sal = list.get(0).getPeSalt();
-		String[] userInfo = securePwd(pepwd, sal);
+		String[] userInfo = sr.securePwd(pepwd, sal);
 		pepwd = userInfo[1];
+		if (!list.get(0).getPestatus().equals("1")) {
+			return "loginForm.jsp?name=a";
+		}
 		if (peid.equals(list.get(0).getPeId()) && pepwd.equals(list.get(0).getPePwd())) {
 			HttpSession session = request.getSession();
 			session.setAttribute("peid", peid);
@@ -188,92 +196,21 @@ public class MemberManager {
 			response.addCookie(ck);
 			return "index.jsp";
 		} else {
-			request.setAttribute("loginch", "실패");
+
 			return "loginForm.jsp";
 		}
 
 	}
 
-	private String[] securePwd(String pepwd, String sal) { // 로그인시 이용
-		String pePwd = pepwd;
-		String hex = "";
-		String userInfo[] = new String[2];
-		String hexSalt = "";
-		// "SHA1PRNG"은 알고리즘 이름
-		SecureRandom random;
-		try {
-			random = SecureRandom.getInstance("SHA1PRNG");
-			byte[] bytes = new byte[16];
-			random.nextBytes(bytes);
-			// SALT 생성
-			String salt = sal;
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			// 평문 암호화
-			md.update(pePwd.getBytes());
-			hex = String.format("%064x", new BigInteger(1, md.digest()));
-
-			// 평문암호화 + 솔트
-			hexSalt = hex + salt;
-			md.update(hexSalt.getBytes());
-			hex = String.format("%064x", new BigInteger(1, md.digest()));
-
-			userInfo[0] = salt;
-			userInfo[1] = hex;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return userInfo;
-
-	}
-
-	public String[] securePwd(String pwd) { // db에 저장되는 값은 salt , (salt+해싱)을 해싱한 값 회원가입시 이용
-		String pepwd = pwd;
-		String hex = "";
-		String userInfo[] = new String[2];
-		String hexSalt = "";
-		// "SHA1PRNG"은 알고리즘 이름
-		SecureRandom random;
-		try {
-			random = SecureRandom.getInstance("SHA1PRNG");
-			byte[] bytes = new byte[16];
-			random.nextBytes(bytes);
-			// SALT 생성
-			String salt = new String(Base64.getEncoder().encode(bytes));
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			// 평문 암호화
-			md.update(pepwd.getBytes());
-			hex = String.format("%064x", new BigInteger(1, md.digest()));
-
-			// 평문암호화 + 솔트
-			hexSalt = hex + salt;
-			md.update(hexSalt.getBytes());
-			hex = String.format("%064x", new BigInteger(1, md.digest()));
-
-			userInfo[0] = salt;
-			userInfo[1] = hex;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return userInfo;
-	}
-
-	/*
-	 * public void page() { MemberDao mDao = new MemberDao(); int page = 1; // 시작페이지
-	 * int pageNumber = 10; // 한페이지에 출력할게시물수 ArrayList<MemberDto> mList =
-	 * mDao.memberList((byte) 1, "쓸모없는값"); int totalCount = mList.size(); // 전체 게시물
-	 * 카운트 int totalPage = (int) Math.ceil(totalCount / (double) pageNumber);
-	 * 
-	 * }
-	 */
-
 	public String WithdrawalCheck() { // 회원탈퇴메소드
 		MemberDao mDao = new MemberDao();
+		Secure sr = new Secure();
 		String peid = request.getParameter("peid");
 		String pepwd = request.getParameter("pepwd");
 		byte a = 2;
 		ArrayList<MemberDto> list = mDao.memberList(a, peid);
 		String sal = list.get(0).getPeSalt();
-		String[] userInfo = securePwd(pepwd, sal);
+		String[] userInfo = sr.securePwd(pepwd, sal);
 		String re = "beforeWithdrawalCheck.jsp";
 		pepwd = userInfo[1];
 		if (pepwd.equals(list.get(0).getPePwd())) { // 두값이 같으면 회원탈퇴처리
@@ -297,7 +234,7 @@ public class MemberManager {
 		if (re) {
 			return "index.jsp";
 		} else {
-			return"personalInfo.jsp";
+			return "personalInfo.jsp";
 		}
 
 	}
@@ -320,33 +257,56 @@ public class MemberManager {
 		return "personalInfo.jsp";
 		// mDao.memberInfoUpdateForm(peid);
 	}
-	
-	public void resetPwd() {
-	}
-	
-	protected PasswordAuthentication getPasswordAuthentication() {
-		return new PasswordAuthentication("projectproonetest@gmail.com","dhponnucpfrmrquw");
-		//dhponnucpfrmrquw
-	}
-	public void mail() {
+	public void joinEmail() {
 		
+		Properties pro = new Properties();
+	//	pro.put("mail.smtp.host", "smtp.gmail.com");
+		pro.put("mail.smtp.host", "smtp.naver.com");
+		pro.put("mail.smtp.port", "587");
+		pro.put("mail.smtp.auth", "true");
+		pro.put("mail.smtp.starttls.enable", "true");
+		pro.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+		Session session = Session.getInstance(pro, new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication("heonamkyu93@naver.com", "hnk9383215");
+			}
+		});
 		
-		
-		
-		
-	}
+		String receiver = "projectproonetest@gmail.com"; // 메일 받을 주소
+		String title = "가입인증 메일입니다";
+		String content = "<h2 style='color:blue'>안녕하세요</h2>"; //"+"<h3>인증번호입니다.</h3><br>"+"<h4>"+random+"<h4>";
+		Message message = new MimeMessage(session);
+		try {
+			message.setFrom(new InternetAddress("heonamkyu93@naver.com", "관리자", "utf-8"));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
+			message.setSubject(title);
+			message.setContent(content, "text/html; charset=utf-8");
 
-	public void emaildup() throws IOException {
+			Transport.send(message);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
+	public void emaildup() throws IOException {          // 메일 중복체크   중복된 이메일이 없으면 인증메일까지 처리 랜덤수 보내고 값을 유효성 체크 
 		MemberDao mDao = new MemberDao();
 		String pemail = request.getParameter("pemail");
 		PrintWriter pw = response.getWriter();
-		boolean re= mDao.emaildup(pemail);
+		boolean re = mDao.emaildup(pemail);
 		response.setCharacterEncoding("utf-8");
-		if(re) {
+		if (re) {
 			pw.print("중복된 이메일이 존재합니다.");
-				
-		}else {
-			pw.print("중복된 이메일이 없습니다.");
+
+		} else {
+			pw.print("중복된 이메일이 없습니다.인증 메일이 발송되었으니 확인 바랍니다.");
+			MailJava mj = new MailJava();
+			int random = (int)(Math.random()*1000000);
+			HttpSession session = request.getSession();
+			session.setAttribute("random", random);
+			mj.sendMail(pemail,random);
 		}
 	}
 

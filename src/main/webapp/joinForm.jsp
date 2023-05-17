@@ -96,8 +96,7 @@
 								<td align="left"><font size=4>이&nbsp;메&nbsp;일&nbsp;:</font></td>
 								<td><input type="text" class="form-control" size="12"
 									name="pemail" id="pemail" maxlength="40"
-									onchange="changemail();"><br> <br> <strong
-									id='em'>이메일을 입력해주세요.</strong></td>
+									onchange="changemail();"><br> <br> <strong id='em'>이메일을 입력해주세요.</strong><br><strong id='em3'></strong></td>
 								<td><input type="button" value="중복확인" onclick="emailch();"><br>
 									<br> <strong id='em2'>중복확인은 필수입니다.</strong></td>
 							</tr>
@@ -123,17 +122,17 @@
 		</div>
 	</div>
 	<script>
-		let duplem = 1;
-		let duplch = 1;
-	//	let te22=document.getElementById('pephonenumber').value;
-		//	let phpat = /^01([0|1|6|7|8|9])
-		function tel() {
-		//	document.getElementById('pephonenumber').value.replace(/-/g, "");
-	document.getElementById('pephonenumber').value
-		alert(t);
-		}
-
+		let duplem = 1;    //이메일중복체크 1이면  onsubmit시 validCheck에서 걸리게 되어있음 중복체크를 해도 값이 변하면 못넘어감
+		let duplch = 1;   // 아이디중복체크 기본값1이고 값이 1이면 onsubmit시 validCheck에서 걸리게 되어있음 중복체크를해도 값이 변하면 onchange 펑션 change에서 값이 1으로 변경되어서 못넘어감
+		let emvali = 1;		// 이메일 정규식체크 1이면  onsubmit시 validCheck에서 걸리게 되어있음 정규식을 만족해도 값이 변하면 역시 못넘어감
+		
 		function emailch() {
+			if(emvali ===1){
+				alert('이메일 형식을 맞춰주세요.');
+			}
+			else{
+			
+			
 			let pemail = document.getElementById('pemail').value;
 			if (document.getElementById('pemail').value == null
 					|| document.getElementById('pemail').value == ""
@@ -158,12 +157,22 @@
 						});
 			}
 		}
+		}
 
 		function change() {
 			duplch = 1;
 		}
 		function changemail() {
 			duplem = 1;
+			emvali = 1;
+			let ee = document.getElementById('pemail').value;
+			let regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+			if(ee.match(regExp)!= null){
+				document.getElementById('em3').innerText='';
+				emvali = 2;
+			}else{
+				document.getElementById('em3').innerText='이메일형식에 맞는 값을 입력해주세요.';	
+				}
 		}
 
 		function dupliCheck() { // 아이디 중복체크 함수
@@ -199,8 +208,6 @@
 			var pename = document.getElementById('pename');
 			let pemail = document.getElementById('pemail');
 			let pephonenumber = document.getElementById('pephonenumber');
-			// pephonenumber.value.replace(/ /gi, "");
-			//			var peid = document.getElementById().value;
 
 			if (peid.value == null || peid.value == "" || peid.value.length < 4) {
 				alert("아이디는 4자이상 필수 입력값입니다.");
@@ -253,6 +260,10 @@
 				alert('이메일 중복확인은 필수입니다.');
 				pemail.focus;
 				document.getElementById('em2').style.color = 'red';
+				return false;
+			}else if (emvali ===1){
+				document.getElementById('em3').style.color = 'red';
+				document.getElementById('em3').innerText='이메일형식에 맞는 값을 입력해주세요.';	
 				return false;
 			}
 

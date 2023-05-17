@@ -1,7 +1,6 @@
 package com.nk.home;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,10 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nk.service.MailJava;
 import com.nk.service.MemberManager;
 
 @WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login",
-		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup" })
+		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup","/tes" })
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -27,7 +27,6 @@ public class HomeController extends HttpServlet {
 		String path = null;
 		byte selforedi = 1; // default 값 1이여서 포워드가 default
 		MemberManager mm = new MemberManager(request, response); // controller에서 코드를 짜면 너무 지저분해저서
-
 		switch (url) {
 		case "/index":
 			path = "index.jsp";
@@ -75,7 +74,12 @@ public class HomeController extends HttpServlet {
 			break;
 		case "/emaildup":
 			mm.emaildup();
-
+			break;
+		case "/tes":
+			MailJava mj = new MailJava();
+			mj.sendMail();
+	//		mm.joinEmail();
+			System.out.println("ddd");
 			break;
 		}
 

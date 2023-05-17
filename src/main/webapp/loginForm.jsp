@@ -46,9 +46,22 @@
    	</form>
     </div>
     <div class="col-md-4" style="background-color: red;"><h1>dddd</h1>
-    ${loginch}
     </div>
   </div>
 </div>
+<%String name=request.getParameter("name"); %>
+<script type="text/javascript">
+
+	
+
+ 
+$(document).ready(function(){
+	<%=name%>lert('탈퇴한 회원이거나 이메일 인증을 해주세요.');
+});
+/*
+$(window).onload(function(){
+	alert('hi - load2');
+});
+ */</script>
 </body>
 </html>

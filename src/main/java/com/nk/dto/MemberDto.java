@@ -10,10 +10,16 @@ public class MemberDto {
 	private int peAge;
 	private String pePower;
 	private String peSalt;
-	
-	
+	private String pestatus;
+		
 	public void setPeSalt(String peSalt) {
 		this.peSalt = peSalt;
+	}
+	public String getPestatus() {
+		return pestatus;
+	}
+	public void setPestatus(String pestatus) {
+		this.pestatus = pestatus;
 	}
 	public String getPeSalt() {
 		return peSalt;
