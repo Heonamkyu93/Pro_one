@@ -13,12 +13,11 @@ public class Secure {
 		String userInfo[] = new String[2];
 		String hexSalt = "";
 		// "SHA1PRNG"은 알고리즘 이름
-		SecureRandom random;
+//		SecureRandom random;
 		try {
-			random = SecureRandom.getInstance("SHA1PRNG");
-			byte[] bytes = new byte[16];
-			random.nextBytes(bytes);
-			System.out.println("여기="+bytes);
+		//	random = SecureRandom.getInstance("SHA1PRNG");
+		//	byte[] bytes = new byte[16];
+		//	random.nextBytes(bytes);
 			// SALT 생성
 			String salt = sal;
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -70,5 +69,5 @@ public class Secure {
 		}
 		return userInfo;
 	}
-
+	
 }

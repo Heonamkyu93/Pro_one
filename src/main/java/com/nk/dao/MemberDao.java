@@ -6,15 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Properties;
-
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import com.nk.dto.MemberDto;
 
@@ -34,9 +25,7 @@ public class MemberDao {
 
 	public MemberDao() {
 		try {
-			con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "c##heo", "1111"); // ojdbc6 오라클
-																										// 계정만들어야함 톰캣
-																										// 포트번호 변경
+			con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "c##heo", "1111"); 
 		} catch (SQLException e) {
 			System.out.println("db 커넥트 ");
 			e.printStackTrace();
@@ -44,8 +33,8 @@ public class MemberDao {
 	}
 
 	public boolean memberInsert(MemberDto mDto) {
-		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','1',?)"; // 테이블 만들때 데이터타입
-		try {
+		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','2',?)"; //0을 값으로 준건 pestatus인데 이걸로 회원의 상태를 파악 1이면 정상회원 0이면 탈퇴회원 2면 메일인증이 안된 회원 
+		try  {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, mDto.getPeId());
 			psmt.setString(2, mDto.getPePwd());
@@ -59,7 +48,11 @@ public class MemberDao {
 				return true;
 			}
 		} catch (Exception e) {
-		}
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
 		return false;
 	}
 
@@ -76,7 +69,11 @@ public class MemberDao {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
 		return 2;
 	}
 
@@ -108,7 +105,11 @@ public class MemberDao {
 				return mList;
 			}
 		} catch (Exception e) {
-		}
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
 		return null;
 	}
 
@@ -124,7 +125,11 @@ public class MemberDao {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
 
 		return "beforeWithdrawalCheck.jsp";
 
@@ -146,7 +151,11 @@ public class MemberDao {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
 
 		return false;
 
@@ -166,9 +175,58 @@ public class MemberDao {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
 		return false;
 	}
+
+	public boolean mialChekFin(String pemail) {
+		String sql = "UPDATE PEMEMBER SET PESTATUS=1 WHERE PEEMAIL=?";
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, pemail);
+			int re=psmt.executeUpdate();
+			if(re!=0) {
+				return true;
+			}else {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
+	return false;
+		
+	}
+
+	public boolean rePwd(MemberDto mDto) {
+		String sql = "UPDATE PEMEMBER SET PEPWD =? , PESALT = ? WHERE PEID=?";
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, mDto.getPePwd());
+			psmt.setString(2, mDto.getPeSalt());
+			psmt.setString(3, mDto.getPeId());
+			int re=psmt.executeUpdate();
+			if(re!=0) {
+				return true; 
+			}else {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
+		return false;
+	}		
 	
 
 	/*

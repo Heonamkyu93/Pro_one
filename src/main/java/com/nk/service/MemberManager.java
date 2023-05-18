@@ -3,20 +3,11 @@ package com.nk.service;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Properties;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 
 import com.nk.dao.MemberDao;
 import com.nk.dto.MemberDto;
@@ -34,6 +25,7 @@ public class MemberManager {
 		MemberDto mDto = new MemberDto();
 		MemberDao mDao = new MemberDao();
 		Secure sr = new Secure();
+		String pemail = request.getParameter("pemail");
 		String pepwd = request.getParameter("pepwd");
 		String[] userInfo = sr.securePwd(pepwd);
 		mDto.setPeSalt(userInfo[0]);
@@ -45,11 +37,54 @@ public class MemberManager {
 		mDto.setPePhoneNumber(request.getParameter("pephonenumber"));
 		boolean re = mDao.memberInsert(mDto);
 		if (re) {
-			request.setAttribute("re", "회원가입");
-			return "index.jsp"; // %%%%% 회원가입후 나올 페이지 만들어야함
+			request.setAttribute("pemail", pemail);
+			mailCertiForm(pemail);
+
+			return "mailCertification.jsp"; // %%%%% 회원가입후 나올 페이지 만들어야함 메일인증 페이지
 		} else {
 			request.setAttribute("re", "회원가입실패"); // %%%% 나중에 jsp에 값 찍어야함
-			return null;
+			return "index.jsp";
+		}
+	}
+
+	public void mailCertiForm(String pemail) { // 인증메일 + 난수 보내는 메소드
+		// MailJava mj = new MailJava();
+		Secure sc = new Secure();
+
+		HttpSession session = request.getSession();
+		session.invalidate();
+		int random = (int) (Math.random() * 1000000);
+		String certi = random + "";
+		String secur[] = sc.securePwd(certi); // 반환되는값 0이 salt 1이 암호화된값
+		String salt = secur[0];
+		String sha = secur[1];
+		session.setAttribute("salt", salt);
+		session.setAttribute("sha", sha);
+		session.setMaxInactiveInterval(10 * 60);
+		// mj.sendMail(pemail, random);
+	}
+
+	public String certiCheck() { // 반환된 난수 검증하는 메소드
+		String certi = request.getParameter("certi");
+		String pemail = request.getParameter("pemail");
+		HttpSession session = request.getSession();
+		String salt = (String) session.getAttribute("salt");
+		String sha = (String) session.getAttribute("sha");
+		Secure sc = new Secure();
+		String re[] = sc.securePwd(certi, salt);
+		if (re[1].equals(sha)) {
+			session.removeAttribute("sha");
+			session.removeAttribute("salt");
+			// 값이 동일하면 인증성공 인증에 성공하면 db에 저장된 status를 1로 변경해줘야함
+			MemberDao mDao = new MemberDao();
+			boolean res = mDao.mialChekFin(pemail);
+			if (res) { // status 1로 변경이 안될경우 만들어야함
+				return "loginForm.jsp";
+			}
+			return "loginForm.jsp";
+
+		} else {
+			return "mailCertification.jsp";
 		}
 	}
 
@@ -171,7 +206,7 @@ public class MemberManager {
 	}
 
 	public String login() { // 입력하는 아이디와 비밀번호가 디비의 정보와 일치하는지 판단하는 메소드 대소문자 구분해야함 오라클이 대소문자 구분함 로그인시 쿠키삭제후 등록
-		logout();
+		logout();			// 세션 쿠키를 삭제하는 부분을 따로 메소드로 만들면 비밀번호 변경이나 탈퇴시 더블체크하는 부분에서 이메소드를 재활용할수있다
 		MemberDao mDao = new MemberDao();
 		Secure sr = new Secure();
 		String peid = request.getParameter("peid");
@@ -257,57 +292,109 @@ public class MemberManager {
 		return "personalInfo.jsp";
 		// mDao.memberInfoUpdateForm(peid);
 	}
-	public void joinEmail() {
-		
-		Properties pro = new Properties();
-	//	pro.put("mail.smtp.host", "smtp.gmail.com");
-		pro.put("mail.smtp.host", "smtp.naver.com");
-		pro.put("mail.smtp.port", "587");
-		pro.put("mail.smtp.auth", "true");
-		pro.put("mail.smtp.starttls.enable", "true");
-		pro.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-		Session session = Session.getInstance(pro, new Authenticator() {
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("heonamkyu93@naver.com", "hnk9383215");
-			}
-		});
-		
-		String receiver = "projectproonetest@gmail.com"; // 메일 받을 주소
-		String title = "가입인증 메일입니다";
-		String content = "<h2 style='color:blue'>안녕하세요</h2>"; //"+"<h3>인증번호입니다.</h3><br>"+"<h4>"+random+"<h4>";
-		Message message = new MimeMessage(session);
-		try {
-			message.setFrom(new InternetAddress("heonamkyu93@naver.com", "관리자", "utf-8"));
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
-			message.setSubject(title);
-			message.setContent(content, "text/html; charset=utf-8");
 
-			Transport.send(message);
+	/*
+	 * public void joinEmail() {
+	 * 
+	 * Properties pro = new Properties(); // pro.put("mail.smtp.host",
+	 * "smtp.gmail.com"); pro.put("mail.smtp.host", "smtp.naver.com");
+	 * pro.put("mail.smtp.port", "587"); pro.put("mail.smtp.auth", "true");
+	 * pro.put("mail.smtp.starttls.enable", "true"); pro.put("mail.smtp.ssl.trust",
+	 * "smtp.gmail.com"); Session session = Session.getInstance(pro, new
+	 * Authenticator() {
+	 * 
+	 * @Override protected PasswordAuthentication getPasswordAuthentication() {
+	 * return new PasswordAuthentication("heonamkyu93@naver.com", "hnk9383215"); }
+	 * });
+	 * 
+	 * String receiver = "projectproonetest@gmail.com"; // 메일 받을 주소 String title =
+	 * "가입인증 메일입니다"; String content = "<h2 style='color:blue'>안녕하세요</h2>";
+	 * //"+"<h3>인증번호입니다.</h3><br>"+"<h4>"+random+"<h4>"; Message message = new
+	 * MimeMessage(session); try { message.setFrom(new
+	 * InternetAddress("heonamkyu93@naver.com", "관리자", "utf-8"));
+	 * message.addRecipient(Message.RecipientType.TO, new
+	 * InternetAddress(receiver)); message.setSubject(title);
+	 * message.setContent(content, "text/html; charset=utf-8");
+	 * 
+	 * Transport.send(message); } catch (Exception e) { e.printStackTrace(); }
+	 * 
+	 * }
+	 */
+	public void emaildup() { // 메일 중복체크 중복된 이메일이 없으면 인증메일까지 처리 랜덤수 보내고 값을 유효성 체크
+		MemberDao mDao = new MemberDao();
+		String pemail = request.getParameter("pemail");
+
+		try (PrintWriter pw = response.getWriter();) {
+			boolean re = mDao.emaildup(pemail);
+			response.setCharacterEncoding("utf-8");
+			if (re) {
+				pw.print("중복된 값이 있습니다.");
+			} else {
+				pw.print("중복된 이메일이 없습니다.");
+			}
 		} catch (Exception e) {
+
+		}
+
+	}
+
+	public void resend() {				//인증번호 다시보내는 메소드
+		String pemail = request.getParameter("pemail");
+		mailCertiForm(pemail);
+
+		try (PrintWriter pw = response.getWriter();) {
+			pw.print("통신");
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public String beforeRepwd() {		// 비밀번호 변경전 더블체크 비밀번호가 동일한지 체크하고  
+		Secure sr = new Secure();
+		MemberDao mDao = new MemberDao();	
+		String peid = request.getParameter("peid");
+		String pepwd = request.getParameter("pepwd");
+		ArrayList<MemberDto> list = mDao.memberList((byte)2,peid);
+		String salt=list.get(0).getPeSalt();
+		String hx[]=sr.securePwd(pepwd,salt);
+		if(hx[1].equals(list.get(0).getPePwd())){
+			return "repwdForm.jsp";
+		}else {
+			request.setAttribute("fail", "실패할경우 jsp에서 처리할거 ");
+			return "beforeRepwdForm.jsp";
+		}
+		
+		
+		
 		
 		
 		
 	}
-	public void emaildup() throws IOException {          // 메일 중복체크   중복된 이메일이 없으면 인증메일까지 처리 랜덤수 보내고 값을 유효성 체크 
+	
+	public void repwd() {				// 변경할 비밀번호 받아와서 새로등록하는 메소드 
 		MemberDao mDao = new MemberDao();
-		String pemail = request.getParameter("pemail");
-		PrintWriter pw = response.getWriter();
-		boolean re = mDao.emaildup(pemail);
-		response.setCharacterEncoding("utf-8");
-		if (re) {
-			pw.print("중복된 이메일이 존재합니다.");
-
-		} else {
-			pw.print("중복된 이메일이 없습니다.인증 메일이 발송되었으니 확인 바랍니다.");
-			MailJava mj = new MailJava();
-			int random = (int)(Math.random()*1000000);
-			HttpSession session = request.getSession();
-			session.setAttribute("random", random);
-			mj.sendMail(pemail,random);
+		MemberDto mDto = new MemberDto();
+		Secure sr = new Secure();
+		String peid =request.getParameter("peid");
+		String rePwd = request.getParameter("repwd");
+		String hex[]=sr.securePwd(rePwd);	//0이 salt
+		mDto.setPeId(peid);
+		mDto.setPePwd(rePwd);
+		mDto.setPeSalt(hex[0]);
+		boolean re=mDao.rePwd(mDto);
+		if(re) {		//디비에 저장 성공이면 처리
+			
+		}else {		// 비밀번호 변경이 실패한경우 
+			
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 
 }

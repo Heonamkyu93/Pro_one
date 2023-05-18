@@ -9,11 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nk.service.MailJava;
 import com.nk.service.MemberManager;
 
 @WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login",
-		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup","/tes" })
+		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup","/tes","/resendmail","/certi" })
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -28,59 +27,65 @@ public class HomeController extends HttpServlet {
 		byte selforedi = 1; // default 값 1이여서 포워드가 default
 		MemberManager mm = new MemberManager(request, response); // controller에서 코드를 짜면 너무 지저분해저서
 		switch (url) {
-		case "/index":
+		case "/index":			//시작페이지
 			path = "index.jsp";
 			break;
-		case "/loginForm":
+		case "/loginForm":		//로그인 양식으로 이동
 			mm.logout();
 			path = "loginForm.jsp";
 			break;
-		case "/joinForm":
+		case "/joinForm":		//회원가입 양식으로 이동
 			path = "joinForm.jsp";
 			break;
-		case "/dupliCheck":
+		case "/dupliCheck":		//아이디 중복체크 ajax
 			mm.dupliCheck();
 			break;
-		case "/login":
+		case "/login":		// 로그인
 			path = mm.login();
 			selforedi = 2;
-			// selforedi = (byte) ((path.equals("index.jsp")) ? 2 : 1); // 1이면 로그인 실패 리턴값
-			// 스트링으로 수정해야함
 			break;
-		case "/memberInsert":
+		case "/memberInsert":		//회원가입 db에 입력
 			path = mm.memberInsert();
 			break;
-		case "/memberList":
+		case "/memberList":			//회원 목록
 			path = mm.memberList();
 			break;
-		case "/memberSearch":
+		case "/memberSearch":		//회원검색 아직 x
 			path = mm.memberSearch();
 			break;
-		case "/memberPrivateInfo":
+		case "/memberPrivateInfo":	//회원 자세한 정보
 			path = mm.memberSearch();
 			break;
-		case "/beforeWithdrawalCheck":
+		case "/beforeWithdrawalCheck":	//탈퇴전에 비밀번호 더블체크양식으로 이동
 			path = "beforeWithdrawalCheck.jsp";
 			break;
-		case "/withdrawalCheck":
+		case "/withdrawalCheck":		//탈퇴전에 비밀번호 더블체크 
 			path = mm.WithdrawalCheck();
 			break;
-		case "/memberInfoUpdateFrom":
+		case "/memberInfoUpdateFrom": //개인정보 수정양식으로 이동
 			path = mm.memberInfoUpdateForm();
 			break;
-		case "/memberInfoUpdate":
+		case "/memberInfoUpdate":		// 개인정보수정
 			path = mm.memberInfoUpdate();
 			selforedi = 2;
 			break;
-		case "/emaildup":
+		case "/emaildup":		//이메일 중복체크 ajax
 			mm.emaildup();
 			break;
 		case "/tes":
-			MailJava mj = new MailJava();
-			mj.sendMail();
-	//		mm.joinEmail();
-			System.out.println("ddd");
 			break;
+		case "/certi":		 
+			break;
+		case "/resendmail":		//회원가입 인증번호 다시보내기 
+			mm.resend();
+			break;
+		case "/beforeRepwd":			//비밀번호 변경전 비밀번호 더블체크   구현 x    
+			mm.beforeRepwd();
+			break;
+		case"/repwd":				// 비밀번호 변경하는 값 받아와서 디비에 저장  구현 x
+		   mm.repwd();
+		break;
+		
 		}
 
 		if (path != null && selforedi == 1) {
