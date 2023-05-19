@@ -52,7 +52,11 @@ public class MemberManager {
 		Secure sc = new Secure();
 
 		HttpSession session = request.getSession();
-		session.invalidate();
+	//	session.invalidate();
+		if(session.getAttribute("salt")!=null && session.getAttribute("sha")!=null) {
+			session.removeAttribute("salt");
+			session.removeAttribute("sha");
+		}
 		int random = (int) (Math.random() * 1000000);
 		String certi = random + "";
 		String secur[] = sc.securePwd(certi); // 반환되는값 0이 salt 1이 암호화된값

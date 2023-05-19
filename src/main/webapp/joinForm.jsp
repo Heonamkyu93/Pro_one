@@ -69,7 +69,7 @@
 								<td><font size=4>&nbsp;비&nbsp;&nbsp;밀&nbsp;&nbsp;번&nbsp;&nbsp;호&nbsp;확&nbsp;인&nbsp;:</font></td>
 								<td colspan="2"><input type="text" class="form-control"
 									size="35" name="pepwd2" id="pepwd2" maxlength="15"><br>
-									<br> <strong>비밀번호를 한번더 확인해주세요.</strong></td>
+									<br> <strong id='pewarn'>비밀번호를 한번더 확인해주세요.</strong></td>
 
 							</tr>
 
@@ -167,6 +167,7 @@
 			emvali = 1;
 			let ee = document.getElementById('pemail').value;
 			let regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+						
 			if(ee.match(regExp)!= null){
 				document.getElementById('em3').innerText='';
 				emvali = 2;
@@ -240,7 +241,7 @@
 			} else if (pepwd.value != pepwd2.value) {
 				alert("비밀번호와 비밀번호 확인은  6자이상 필수 입력값이며 서로 일치해야 합니다.");
 				document.getElementById('pepwd').focus;
-				document.getElementById('pepwd2').style.color = 'red';
+				document.getElementById('pewarn').style.color = 'red';
 				return false;
 			} else if (peage.value.length == 0) {
 				alert("나이를 입력해주세요.");

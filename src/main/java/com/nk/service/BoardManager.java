@@ -14,6 +14,7 @@ public class BoardManager {
 	 this.request = request;
 	 this.response = response;
 	}
+	
 	public String boardInsert()  {
 		BoardDao ba = new BoardDao();
 		BoardDto bt = new BoardDto();
@@ -22,6 +23,9 @@ public class BoardManager {
 		bt.setBoContent(request.getParameter("bocontent"));
 		bt.setBoAvailable(1);
 		boolean re=ba.boardInsert(bt);
+		if(re) {
+			
+		}
 		return null;
 	}
 	public String boardDel() {
@@ -31,7 +35,15 @@ public class BoardManager {
 		return null;
 	}
 	
-	
+	public void contentInside() {
+		BoardDao bDao = new BoardDao();
+		String botitle=request.getParameter("botitle");
+		bDao.contentInside(botitle);
+		
+		
+		
+		
+	}
 	
 	
 	

@@ -33,7 +33,7 @@ public class MemberDao {
 	}
 
 	public boolean memberInsert(MemberDto mDto) {
-		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','2',?)"; //0을 값으로 준건 pestatus인데 이걸로 회원의 상태를 파악 1이면 정상회원 0이면 탈퇴회원 2면 메일인증이 안된 회원 
+		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','2',?,SYSDATE)"; //0을 값으로 준건 pestatus인데 이걸로 회원의 상태를 파악 1이면 정상회원 0이면 탈퇴회원 2면 메일인증이 안된 회원 
 		try  {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, mDto.getPeId());

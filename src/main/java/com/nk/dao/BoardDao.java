@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 
 import com.nk.dto.BoardDto;
 
@@ -50,7 +51,11 @@ public class BoardDao {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
 		return false;
 	}
 
@@ -67,9 +72,44 @@ public class BoardDao {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
 		
 		return false;
+	}
+
+	public void contentInside(String botitle) {
+		LinkedList<BoardDto> ll = new LinkedList<>();
+		BoardDto bDto = null;
+		String sql = "SELECT * FROM PEBOARD WHERE BOTITLE=?";   //타이틀로 가져오면 안되고 unique나 시퀀스도 가져와서 중복된값이 없도록 처리해야한다
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, botitle);
+			rs=psmt.executeQuery();
+			while(rs.next()) {
+				bDto=new BoardDto();
+				bDto.setBoTitle(rs.getString("botitle"));
+				bDto.setBoContent(rs.getString("bocontent"));
+				bDto.setBoSequence(rs.getString("bosequence"));
+				bDto.setBoDate(rs.getString("bodate"));
+				bDto.setPeid(rs.getString("peid"));
+				bDto.setBoAvailable(rs.getInt("boavailable"));
+				ll.add(bDto);
+			}
+			if(rs.getString("botitle")!=null) {
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+	          if (rs != null) try { rs.close(); } catch(Exception e) {}
+	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
+	          if (con != null) try { con.close(); } catch(Exception e) {}
+	      }
+		
 	}
 
 
