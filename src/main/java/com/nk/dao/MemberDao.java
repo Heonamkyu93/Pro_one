@@ -186,6 +186,7 @@ public class MemberDao {
 	public boolean mialChekFin(String pemail) {
 		String sql = "UPDATE PEMEMBER SET PESTATUS=1 WHERE PEEMAIL=?";
 		try {
+			System.out.println(pemail);
 			psmt=con.prepareStatement(sql);
 			psmt.setString(1, pemail);
 			int re=psmt.executeUpdate();

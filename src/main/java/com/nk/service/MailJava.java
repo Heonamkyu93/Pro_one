@@ -23,7 +23,7 @@ public class MailJava {
 			Session session = Session.getInstance(pro, new Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication("projectproonetest@gmail.com","clufsitgbcubitql");
+					return new PasswordAuthentication("projectproonetest@gmail.com","xzskxnirhmvvlpmh");
 				}
 			});
 			

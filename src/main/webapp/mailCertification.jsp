@@ -15,7 +15,7 @@
 				<th colspan="2"><h6>메일 인증</h6></th>
 			</tr>
 			<tr>
-				<th>이메일:<input type="text" readonly="readonly" id='pe' name='pemail' value=${pemail}/></th>
+				<th>이메일:<input type="text" readonly="readonly" id='pe' name='pemail' value=${pemail}></th>
 				<th>인증번호:<input type='text' maxlength="15"
 					placeholder="인증번호를 입력하세요." name='certi'><br><i>인증번호를 입력하세요.</i></th>
 

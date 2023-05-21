@@ -74,7 +74,8 @@ public class HomeController extends HttpServlet {
 			break;
 		case "/tes":
 			break;
-		case "/certi":		 
+		case "/certi":
+			path=mm.certiCheck();
 			break;
 		case "/resendmail":		//회원가입 인증번호 다시보내기 
 			mm.resend();

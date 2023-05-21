@@ -33,7 +33,7 @@ public class BoardDao {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public boolean boardInsert(BoardDto bt) {
 		String sql = "INSERT INTO PEBOARD VALUES ('BONUMBERINGSEQ.NEXTVAL',?,?"+1+"SYSDATE,?)";
 		try {
