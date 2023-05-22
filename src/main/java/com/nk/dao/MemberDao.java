@@ -25,7 +25,7 @@ public class MemberDao {
 
 	public MemberDao() {
 		try {
-			con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "c##heo", "1111"); 
+			con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "c##heo", "1111");
 		} catch (SQLException e) {
 			System.out.println("db 커넥트 ");
 			e.printStackTrace();
@@ -33,8 +33,15 @@ public class MemberDao {
 	}
 
 	public boolean memberInsert(MemberDto mDto) {
-		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','2',?,SYSDATE)"; //0을 값으로 준건 pestatus인데 이걸로 회원의 상태를 파악 1이면 정상회원 0이면 탈퇴회원 2면 메일인증이 안된 회원 
-		try  {
+		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','2',?,SYSDATE)"; // 0을 값으로 준건
+																											// pestatus인데
+																											// 이걸로 회원의
+																											// 상태를 파악
+																											// 1이면 정상회원
+																											// 0이면 탈퇴회원
+																											// 2면 메일인증이
+																											// 안된 회원
+		try {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, mDto.getPeId());
 			psmt.setString(2, mDto.getPePwd());
@@ -48,11 +55,23 @@ public class MemberDao {
 				return true;
 			}
 		} catch (Exception e) {
-		}finally {
-	          if (rs != null) try { rs.close(); } catch(Exception e) {}
-	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
-	          if (con != null) try { con.close(); } catch(Exception e) {}
-	      }
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
 		return false;
 	}
 
@@ -69,11 +88,23 @@ public class MemberDao {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-	          if (rs != null) try { rs.close(); } catch(Exception e) {}
-	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
-	          if (con != null) try { con.close(); } catch(Exception e) {}
-	      }
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
 		return 2;
 	}
 
@@ -98,6 +129,8 @@ public class MemberDao {
 				mDto.setPeSequence(rs.getString("pesequence"));
 				mDto.setPePower(rs.getString("pepower"));
 				mDto.setPeSalt(rs.getString("pesalt"));
+				System.out.println(rs.getString("peid"));
+				System.out.println(rs.getString("pestatus"));
 				mDto.setPestatus(rs.getString("pestatus"));
 				mList.add(mDto);
 			}
@@ -105,31 +138,43 @@ public class MemberDao {
 				return mList;
 			}
 		} catch (Exception e) {
-		}finally {
-	          if (rs != null) try { rs.close(); } catch(Exception e) {}
-	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
-	          if (con != null) try { con.close(); } catch(Exception e) {}
-	      }
+		} /*
+			 * finally { if (rs != null) try { rs.close(); } catch (Exception e) { } if
+			 * (psmt != null) try { psmt.close(); } catch (Exception e) { } if (con != null)
+			 * try { con.close(); } catch (Exception e) { } }
+			 */
 		return null;
 	}
 
-	public String WithdrawalCheck(String peid, String pepwd) {
-		String sql = "UPDATE PEMEMBER SET PENAME= '탈퇴' , PEAGE =0 , PEPHONENUMBER ='탈퇴',PEEMAIL='탈퇴',PESTATUS= 0, PESALT ='탈퇴' WHERE PEID=? AND PEPWD=?  ";
+	public String WithdrawalCheck(MemberDto mDto) {
+		String sql = "UPDATE PEMEMBER SET PENAME= '탈퇴' , PEAGE =0 , PEPHONENUMBER ='탈퇴',PEEMAIL='탈퇴',PESTATUS= 0, PESALT ='탈퇴' WHERE PEID=? AND PEPWD=?";
 		try {
 			psmt = con.prepareStatement(sql);
-			psmt.setString(1, peid);
-			psmt.setString(2, pepwd);
+			psmt.setString(1, mDto.getPeId());
+			psmt.setString(2, mDto.getPePwd());
 			int re = psmt.executeUpdate();
 			if (re != 0) {
 				return "index.jsp";
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-	          if (rs != null) try { rs.close(); } catch(Exception e) {}
-	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
-	          if (con != null) try { con.close(); } catch(Exception e) {}
-	      }
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
 
 		return "beforeWithdrawalCheck.jsp";
 
@@ -151,11 +196,23 @@ public class MemberDao {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-	          if (rs != null) try { rs.close(); } catch(Exception e) {}
-	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
-	          if (con != null) try { con.close(); } catch(Exception e) {}
-	      }
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
 
 		return false;
 
@@ -175,11 +232,23 @@ public class MemberDao {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-	          if (rs != null) try { rs.close(); } catch(Exception e) {}
-	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
-	          if (con != null) try { con.close(); } catch(Exception e) {}
-	      }
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
 		return false;
 	}
 
@@ -187,48 +256,72 @@ public class MemberDao {
 		String sql = "UPDATE PEMEMBER SET PESTATUS=1 WHERE PEEMAIL=?";
 		try {
 			System.out.println(pemail);
-			psmt=con.prepareStatement(sql);
+			psmt = con.prepareStatement(sql);
 			psmt.setString(1, pemail);
-			int re=psmt.executeUpdate();
-			if(re!=0) {
+			int re = psmt.executeUpdate();
+			if (re != 0) {
 				return true;
-			}else {
+			} else {
 				return false;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-	          if (rs != null) try { rs.close(); } catch(Exception e) {}
-	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
-	          if (con != null) try { con.close(); } catch(Exception e) {}
-	      }
-	return false;
-		
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
+		return false;
+
 	}
 
 	public boolean rePwd(MemberDto mDto) {
 		String sql = "UPDATE PEMEMBER SET PEPWD =? , PESALT = ? WHERE PEID=?";
 		try {
-			psmt=con.prepareStatement(sql);
+			psmt = con.prepareStatement(sql);
 			psmt.setString(1, mDto.getPePwd());
 			psmt.setString(2, mDto.getPeSalt());
 			psmt.setString(3, mDto.getPeId());
-			int re=psmt.executeUpdate();
-			if(re!=0) {
-				return true; 
-			}else {
+			int re = psmt.executeUpdate();
+			if (re != 0) {
+				return true;
+			} else {
 				return false;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}finally {
-	          if (rs != null) try { rs.close(); } catch(Exception e) {}
-	          if (psmt != null) try { psmt.close(); } catch(Exception e) {}
-	          if (con != null) try { con.close(); } catch(Exception e) {}
-	      }
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
 		return false;
-	}		
-	
+	}
+
 
 	/*
 	 * public void memberInfoUpdateForm(String peid) { String sql =

@@ -31,7 +31,7 @@ public class HomeController extends HttpServlet {
 			path = "index.jsp";
 			break;
 		case "/loginForm":		//로그인 양식으로 이동
-			mm.logout();
+		//	mm.logout();
 			path = "loginForm.jsp";
 			break;
 		case "/joinForm":		//회원가입 양식으로 이동
@@ -42,7 +42,6 @@ public class HomeController extends HttpServlet {
 			break;
 		case "/login":		// 로그인
 			path = mm.login();
-			selforedi = 2;
 			break;
 		case "/memberInsert":		//회원가입 db에 입력
 			path = mm.memberInsert();
@@ -76,6 +75,7 @@ public class HomeController extends HttpServlet {
 			break;
 		case "/certi":
 			path=mm.certiCheck();
+			selforedi = 2;
 			break;
 		case "/resendmail":		//회원가입 인증번호 다시보내기 
 			mm.resend();

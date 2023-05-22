@@ -30,7 +30,8 @@
 		</table>
 	</form>
 	<script type="text/javascript">
-		function resend() {
+	
+	function resend() {
 			let pemail = document.getElementById('pe').value;
 			alert(pemail);
 			$.ajax({

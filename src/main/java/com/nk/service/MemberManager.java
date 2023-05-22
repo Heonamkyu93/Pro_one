@@ -224,12 +224,20 @@ public class MemberManager {
 			request.setAttribute("loginch", "실패");
 			return "loginForm.jsp";
 		}
-
-		String sal = list.get(0).getPeSalt();
+			String sta= list.get(0).getPestatus();
+		if(sta.equals("0")) {
+			System.out.println("durl");
+		}
+			String sal = list.get(0).getPeSalt();
 		String[] userInfo = sr.securePwd(pepwd, sal);
 		pepwd = userInfo[1];
-		if (!list.get(0).getPestatus().equals("1")) {
-			return "loginForm.jsp?name=a";
+		if (!list.get(0).getPestatus().equals("1")) {					
+			String pemail = list.get(0).getPeMail();
+			System.out.println(pemail);
+			request.setAttribute("alert", "테스트");
+			request.setAttribute("pemail", pemail);
+			mailCertiForm(pemail);
+			return "mailCertification.jsp";
 		}
 		if (peid.equals(list.get(0).getPeId()) && pepwd.equals(list.get(0).getPePwd())) {
 			HttpSession session = request.getSession();
@@ -246,6 +254,7 @@ public class MemberManager {
 
 	public String WithdrawalCheck() { // 회원탈퇴메소드
 		MemberDao mDao = new MemberDao();
+		MemberDto mDto = new MemberDto();
 		Secure sr = new Secure();
 		String peid = request.getParameter("peid");
 		String pepwd = request.getParameter("pepwd");
@@ -255,14 +264,31 @@ public class MemberManager {
 		String[] userInfo = sr.securePwd(pepwd, sal);
 		String re = "beforeWithdrawalCheck.jsp";
 		pepwd = userInfo[1];
+		mDto.setPeId(peid);
+		mDto.setPePwd(pepwd);
 		if (pepwd.equals(list.get(0).getPePwd())) { // 두값이 같으면 회원탈퇴처리
-			re = mDao.WithdrawalCheck(peid, pepwd);
+			re = mDao.WithdrawalCheck(mDto);
 			return re;
 		} else { // 틀리다면 beforewi 로다시
 			return re;
 		}
 
 	}
+
+	/*
+	 * public String WithdrawalCheck() { // 회원탈퇴메소드 MemberDao mDao = new
+	 * MemberDao(); MemberDto mDto = new MemberDto(); Secure sr = new Secure();
+	 * String peid = request.getParameter("peid"); String pepwd =
+	 * request.getParameter("pepwd"); byte a = 2; ArrayList<MemberDto> list =
+	 * mDao.memberList(a, peid); String sal = list.get(0).getPeSalt(); String[]
+	 * userInfo = sr.securePwd(pepwd, sal); String re = "beforeWithdrawalCheck.jsp";
+	 * pepwd = userInfo[1]; mDto.setPeId(peid); mDto.setPePwd(pepwd); if
+	 * (pepwd.equals(list.get(0).getPePwd())) { // 두값이 같으면 회원탈퇴처리 re =
+	 * mDao.WithdrawalCheck(mDto); return re; } else { // 틀리다면 beforewi 로다시 return
+	 * re; }
+	 * 
+	 * }
+	 */
 
 	public String memberInfoUpdate() {
 		MemberDao mDao = new MemberDao();

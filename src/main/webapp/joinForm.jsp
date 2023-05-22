@@ -60,14 +60,14 @@
 							</tr>
 							<tr align="left">
 								<td><font size=4>&nbsp;비&nbsp;&nbsp;밀&nbsp;&nbsp;번&nbsp;&nbsp;호&nbsp;:</font></td>
-								<td colspan="2"><input type="text" class="form-control"
+								<td colspan="2"><input type="password" class="form-control"
 									size="35" name="pepwd" id="pepwd" maxlength="15"><br>
 									<br> <strong>비밀번호는 6자이상이여야하며 필수로 입력해야합니다.</strong></td>
 
 							</tr>
 							<tr align="left">
 								<td><font size=4>&nbsp;비&nbsp;&nbsp;밀&nbsp;&nbsp;번&nbsp;&nbsp;호&nbsp;확&nbsp;인&nbsp;:</font></td>
-								<td colspan="2"><input type="text" class="form-control"
+								<td colspan="2"><input type="password" class="form-control"
 									size="35" name="pepwd2" id="pepwd2" maxlength="15"><br>
 									<br> <strong id='pewarn'>비밀번호를 한번더 확인해주세요.</strong></td>
 
