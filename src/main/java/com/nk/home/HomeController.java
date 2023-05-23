@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.nk.service.MemberManager;
 
 @WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login",
-		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup","/tes","/resendmail","/certi" })
+		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup","/tes","/resendmail","/certi","/logout"})
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -28,11 +28,11 @@ public class HomeController extends HttpServlet {
 		MemberManager mm = new MemberManager(request, response); // controller에서 코드를 짜면 너무 지저분해저서
 		switch (url) {
 		case "/index":			//시작페이지
-			path = "index.jsp";
+			path = mm.index();
+			selforedi = 2;
 			break;
 		case "/loginForm":		//로그인 양식으로 이동
-		//	mm.logout();
-			path = "loginForm.jsp";
+			path = mm.loginForm();
 			break;
 		case "/joinForm":		//회원가입 양식으로 이동
 			path = "joinForm.jsp";
@@ -72,6 +72,10 @@ public class HomeController extends HttpServlet {
 			mm.emaildup();
 			break;
 		case "/tes":
+			break;
+		case "/logout":
+			path=mm.tryLogout();
+			selforedi = 2;
 			break;
 		case "/certi":
 			path=mm.certiCheck();

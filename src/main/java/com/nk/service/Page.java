@@ -1,6 +1,6 @@
 package com.nk.service;
 
-public class BoardPage {
+public class Page {
 
 	public int totlaPage(int totalData, int perPage) {
 		return ((totalData - 1) / perPage) + 1;

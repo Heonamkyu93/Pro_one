@@ -11,6 +11,15 @@ public class MemberDto {
 	private String pePower;
 	private String peSalt;
 	private String pestatus;
+	private String pejoinDate;
+	
+	
+	public String getPejoinDate() {
+		return pejoinDate;
+	}
+	public void setPejoinDate(String pejoinDate) {
+		this.pejoinDate = pejoinDate;
+	}
 		
 	public void setPeSalt(String peSalt) {
 		this.peSalt = peSalt;

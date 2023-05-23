@@ -20,13 +20,20 @@
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+	
+	
+	
 </head>
 <body>
-<jsp:include page="header.jsp"></jsp:include>
-<a href="./boardList">a메</a>
-<a href="./board">보드</a>
-${re}
-${loginch}
+<script type="text/javascript">
+urlSearch = new URLSearchParams(location.search);
+const nav = urlSearch.get('nav');
+<%String navi=request.getParameter("nav");%>
+</script>	
+<jsp:include page="<%=navi%>"></jsp:include>
+
+
 <jsp:include page="footer.jsp"></jsp:include>
 </body>
 </html>

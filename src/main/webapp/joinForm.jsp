@@ -21,6 +21,7 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
+<jsp:include page="logoutheader.jsp"></jsp:include>
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-1"></div>
@@ -50,7 +51,7 @@
 							<tr align="left">
 								<td><font size=4>&nbsp;아&nbsp;이&nbsp;디&nbsp;:&nbsp;</font></td>
 								<td><input type="text" class="form-control" name="peid"
-									id="peid" name="peid" maxlength="15" onchange="change();">
+									id="peid" name="peid" maxlength="15" onchange="changeid();">
 									<br> <br> <strong id='idnotice'>아이디는 4글자이상
 										15자 이하로 필수로 입력해야합니다.</strong></td>
 								<td><input type="button" value="중복확인"
@@ -61,23 +62,23 @@
 							<tr align="left">
 								<td><font size=4>&nbsp;비&nbsp;&nbsp;밀&nbsp;&nbsp;번&nbsp;&nbsp;호&nbsp;:</font></td>
 								<td colspan="2"><input type="password" class="form-control"
-									size="35" name="pepwd" id="pepwd" maxlength="15"><br>
+									size="35" name="pepwd" id="pepwd" maxlength="15" onchange="pwdblank();" ><br>
 									<br> <strong>비밀번호는 6자이상이여야하며 필수로 입력해야합니다.</strong></td>
 
 							</tr>
 							<tr align="left">
 								<td><font size=4>&nbsp;비&nbsp;&nbsp;밀&nbsp;&nbsp;번&nbsp;&nbsp;호&nbsp;확&nbsp;인&nbsp;:</font></td>
 								<td colspan="2"><input type="password" class="form-control"
-									size="35" name="pepwd2" id="pepwd2" maxlength="15"><br>
+									size="35" name="pepwd2" id="pepwd2" maxlength="15" onchange="pwdblank2();"><br>
 									<br> <strong id='pewarn'>비밀번호를 한번더 확인해주세요.</strong></td>
 
 							</tr>
 
 							<tr align="left">
 								<td align="left"><font size=4>&nbsp;이&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;름&nbsp;:&nbsp;</font></td>
-								<td colspan="2"><input type="text" class="form-control"
-									name="pename" id="pename" maxlength="15"><br> <br>
-									<strong>이름은 필수로 입력해야합니다.</strong></td>
+								<td colspan="2"><input type="text" class="form-control" 
+									name="pename" id="pename" maxlength="15" onchange="nameblank();"><br> <br>
+									<strong>이름은 필수로 입력해야합니다. 공백은 허용하지 않습니다.</strong></td>
 							</tr>
 							<tr align="left">
 								<td align="left"><font size=4>&nbsp;나&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;이&nbsp;:&nbsp;</font></td>
@@ -121,10 +122,38 @@
 			</div>
 		</div>
 	</div>
+	<jsp:include page="footer.jsp"></jsp:include>
 	<script>
 		let duplem = 1;    //이메일중복체크 1이면  onsubmit시 validCheck에서 걸리게 되어있음 중복체크를 해도 값이 변하면 못넘어감
 		let duplch = 1;   // 아이디중복체크 기본값1이고 값이 1이면 onsubmit시 validCheck에서 걸리게 되어있음 중복체크를해도 값이 변하면 onchange 펑션 change에서 값이 1으로 변경되어서 못넘어감
 		let emvali = 1;		// 이메일 정규식체크 1이면  onsubmit시 validCheck에서 걸리게 되어있음 정규식을 만족해도 값이 변하면 역시 못넘어감
+		
+		
+		
+		function nameblank(){
+			let name=document.getElementById('pename').value;
+			const trimStr = name.replaceAll(' ', '');
+			document.getElementById('pename').value=trimStr;
+		}
+		
+		function pwdblank(){
+			let pepwd=document.getElementById('pepwd').value;
+			const trimStr = pepwd.replaceAll(' ', '');
+			document.getElementById('pepwd').value=trimStr;
+		}
+		function pwdblank2(){
+			let pepwd2=document.getElementById('pepwd2').value;
+			const trimStr2 = pepwd2.replaceAll(' ', '');
+			document.getElementById('pepwd2').value=trimStr2;
+		}
+			
+
+		
+
+		
+		
+		
+		
 		
 		function emailch() {
 			if(emvali ===1){
@@ -159,8 +188,11 @@
 		}
 		}
 
-		function change() {
+		function changeid() {
 			duplch = 1;
+			let peid=document.getElementById('peid').value;
+			const trimStr = peid.replaceAll(' ', '');
+			document.getElementById('peid').value=trimStr;
 		}
 		function changemail() {
 			duplem = 1;
@@ -178,7 +210,7 @@
 
 		function dupliCheck() { // 아이디 중복체크 함수
 			if (document.getElementById('peid').value == null
-					|| document.getElementById('peid').value == "") {
+					|| document.getElementById('peid').value == "" ) {
 				alert("아이디는 4자이상 필수 입력값입니다.");
 				document.getElementById('idnotice').style.color = 'red';
 			} else {

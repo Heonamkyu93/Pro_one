@@ -20,7 +20,7 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-	<header>
+		<header>
 		<nav class="navbar navbar-default" id="nav">
 			<div class="container-fluid">
 				<div class="navbar-header">
@@ -30,20 +30,24 @@
 						<span class="sr-only"></span> <span class="icon-bar"></span> <span
 							class="icon-bar"></span> <span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="#">#####</a>
+					<a class="navbar-brand" href="./index">#####</a>
 				</div>
 				<div class="collapse navbar-collapse"
 					id="bs-example-navbar-collapse-1">
+					
+						
+						
+								
+					
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="./memberList">리스트<span class="sr-only"></span></a></li>
-
-						<li><a href="./loginForm">로그인<span class="sr-only"></span></a></li>
-						<li><a href="./joinForm">회원가입</a></li>
+							<li><a href="./boardList">게시판<span class="sr-only"></span></a></li>	
+						<li><a href="./logout">로그아웃<span class="sr-only"></span></a></li>
+						<li><a href="./memberInfoUpdateFrom">개인정보<span class="sr-only"></span></a></li>
+						<li>	<a href="./beforeWithdrawalCheck">회원탈퇴<span class="sr-only"></span></a>	</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
-
-	</header>
+</header>
 </body>
 </html>

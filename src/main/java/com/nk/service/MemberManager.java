@@ -42,7 +42,6 @@ public class MemberManager {
 			mailCertiForm(pemail);
 			return "mailCertification.jsp"; // %%%%% 회원가입후 나올 페이지 만들어야함 메일인증 페이지
 		} else {
-			request.setAttribute("re", "회원가입실패"); // %%%% 나중에 jsp에 값 찍어야함
 			return "index.jsp";
 		}
 	}
@@ -100,17 +99,65 @@ public class MemberManager {
 		if (login.equals("logout")) {
 			return "loginForm.jsp";
 		}
+		int cur = 1;
+		int listco =1;
+		if(request.getParameter("page")!=null) {
+			cur=Integer.parseInt(request.getParameter("page"));
+			listco=cur*10-9;
+		}
 		MemberDao mDao = new MemberDao();
-		byte a = 1;
-		String gar = "d";
-		request.setAttribute("mList", makeHtmlList(a, mDao.memberList(a, gar)));
-
+		String memberTable =makeHtmlList(mDao.memberList(listco,listco+9));
+		String memPage = makeHtmlPage(cur);
+		request.setAttribute("mList", memberTable);
+		request.setAttribute("mpage", memPage);
 		return "showList.jsp";
 	}
 
-	private String makeHtmlList(byte a, ArrayList<MemberDto> mList) {
+	private String makeHtmlPage(int cur) {
+		Page mp = new Page();
+		MemberDao mDao = new MemberDao();
+		int total=mp.totlaPage(mDao.toal(), 10);
+		int start = mp.startPage(cur, 10);
+		int end= mp.endPage(cur, 10, total);
 		StringBuilder sb = new StringBuilder();
 		sb.append("<table border='1'>");
+		sb.append("<tr>");
+		if(mp.pre(start)) {
+			sb.append("<th>");
+			sb.append("<a href='./listPage?page=");
+			sb.append(start-1);
+			sb.append("'>");
+			sb.append("<");
+			sb.append("</a>");
+			sb.append("</th>");
+		}
+		for (start=start; start <= end; start++) {
+			sb.append("<th>");
+			sb.append("<a href='./listPage?page=");
+			sb.append(start);
+			sb.append("'>");
+			sb.append(start);
+			sb.append("</a>");
+			sb.append("</th>");
+		}
+		if(mp.next(total, end)) {
+			sb.append("<th>");
+			sb.append("<a href='./listPage?page=");
+			sb.append(start);
+			sb.append("'>");
+			sb.append(">");
+			sb.append("</a>");
+			sb.append("</th>");
+		}
+		sb.append("</tr>");
+		sb.append("</table>");
+		return sb.toString();
+	}
+
+	private String makeHtmlList(ArrayList<MemberDto> mList) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<table border='1' class='table'>");
+		sb.append("<thead>");
 		sb.append("<tr>");
 		sb.append("<th>");
 		sb.append("회원번호");
@@ -121,63 +168,47 @@ public class MemberManager {
 		sb.append("<th>");
 		sb.append("이름");
 		sb.append("</th>");
-		/*
-		 * sb.append("<th>"); sb.append("나이"); sb.append("</th>"); sb.append("<th>");
-		 * sb.append("연락처"); sb.append("</th>"); sb.append("<th>"); sb.append("이메일");
-		 * sb.append("</th>");
-		 */
+		sb.append("<th>");
+		sb.append("가입일");
+		sb.append("</th>");
 		sb.append("</tr>");
+		sb.append("</thead>");
+		sb.append("<tbody>");
 		for (int i = 0; i < mList.size(); i++) {
 			sb.append("<tr>");
-			sb.append("<th>");
+			sb.append("<td>");
 			sb.append(mList.get(i).getPeSequence());
-			sb.append("</th>");
-			sb.append("<th>");
+			sb.append("</td>");
+			sb.append("<td>");
 			sb.append("<a href='./memberInfoUpdateFrom?peid=");
 			sb.append(mList.get(i).getPeId());
 			sb.append("'>");
 			sb.append(mList.get(i).getPeId());
 			sb.append("</a>");
-			sb.append("</th>");
-			sb.append("<th>");
+			sb.append("</td>");
+			sb.append("<td>");
 			sb.append(mList.get(i).getPeName());
-			sb.append("</th>");
-			/*
-			 * sb.append("<th>"); sb.append(mList.get(i).getPeAge()); sb.append("</th>");
-			 * sb.append("<th>"); sb.append(mList.get(i).getPePhoneNumber());
-			 * sb.append("</th>"); sb.append("<th>"); sb.append(mList.get(i).getPeMail());
-			 * sb.append("</th>");
-			 */
-			if (a == 2) { // 나중에 위에 있는 이메일 전화번호 삭제리스트에서 어느정도 정보를 보여주고 아이디를 클릭했을때 모든정보를 보여주려고 메소드 재활용을 위해
-							// a바이트로 변별
-				sb.append("<th>");
-				sb.append(mList.get(i).getPePhoneNumber());
-				sb.append("</th>");
-				sb.append("<th>");
-				sb.append(mList.get(i).getPeMail());
-				sb.append("</th>");
-			}
+			sb.append("</td>");
+			sb.append("<td>");
+			sb.append(mList.get(i).getPejoinDate());
+			sb.append("</td>");
 			sb.append("</tr>");
-
 		}
-
+		sb.append("<tbody>");
 		sb.append("</table>");
 		return sb.toString();
 	}
 
 	public String memberSearch() {
 		MemberDao mDao = new MemberDao();
-		byte a = 2;
-		request.setAttribute("d", makeHtmlList(a, mDao.memberList(a, request.getParameter("peid"))));
-		// mDao.memberSearch(request.getParameter("peid"));
+		request.setAttribute("d", makeHtmlList(mDao.memberSearch(request.getParameter("peid"))));
 		return null;
 	}
 
 	public void dupliCheck() throws IOException { // 회원가입시 아이디 중복체크 ajax 메소드
 		PrintWriter out = response.getWriter();
 		MemberDao mDao = new MemberDao();
-		byte a = 2;
-		if (mDao.memberList(a, request.getParameter("peid")) != null)
+		if (mDao.memberSearch(request.getParameter("peid")) != null)
 			out.print("y");
 		else
 			out.print("n");
@@ -185,17 +216,17 @@ public class MemberManager {
 	}
 
 	public String loginCookie() { // 다른 페이지를 갈때 쿠키여부를 확인해서 로그인상태인지 아닌지를 판단하는 메소드
-		Cookie[] cList = request.getCookies();
+		/* Cookie[] cList = request.getCookies();
+		 * for (int i = 0; i < cList.length && cList[i].getName() != null; i++) { if
+		 * (cList[i].getName().equals("peid")) { cookie = 1; break; } }
+		 */		
+		HttpSession session = request.getSession();
 		byte cookie = 0;
-		for (int i = 0; i < cList.length && cList[i].getName() != null; i++) {
-			if (cList[i].getName().equals("peid")) {
-				cookie = 1;
-				break;
-			}
+		if(session.getAttribute("peid")!=null) {
+			cookie=1;
 		}
 		String cook = (cookie != 0) ? "login" : "logout";
-		return cook;
-
+		 return cook;
 	}
 
 	public void logout() {
@@ -218,22 +249,19 @@ public class MemberManager {
 		Secure sr = new Secure();
 		String peid = request.getParameter("peid");
 		String pepwd = request.getParameter("pepwd");
-		byte a = 2;
-		ArrayList<MemberDto> list = mDao.memberList(a, peid);
+		ArrayList<MemberDto> list = mDao.memberSearch(peid);
+		
 		if (list == null) {
-			request.setAttribute("loginch", "실패");
 			return "loginForm.jsp";
 		}
 			String sta= list.get(0).getPestatus();
 		if(sta.equals("0")) {
-			System.out.println("durl");
 		}
 			String sal = list.get(0).getPeSalt();
 		String[] userInfo = sr.securePwd(pepwd, sal);
 		pepwd = userInfo[1];
 		if (!list.get(0).getPestatus().equals("1")) {					
 			String pemail = list.get(0).getPeMail();
-			System.out.println(pemail);
 			request.setAttribute("alert", "테스트");
 			request.setAttribute("pemail", pemail);
 			mailCertiForm(pemail);
@@ -242,12 +270,15 @@ public class MemberManager {
 		if (peid.equals(list.get(0).getPeId()) && pepwd.equals(list.get(0).getPePwd())) {
 			HttpSession session = request.getSession();
 			session.setAttribute("peid", peid);
+			session.setAttribute("pepower", list.get(0).getPePower());
 			Cookie ck = new Cookie("peid", peid);
 			response.addCookie(ck);
-			return "index.jsp";
+			System.out.println(list.get(0).getPePower());
+			String path = (list.get(0).getPePower().equals("3"))?"index.jsp?nav=adminheader.jsp":"index.jsp?nav=loginheader.jsp";
+			return path;
 		} else {
 
-			return "loginForm.jsp";
+			return "loginForm.jsp?nav=logoutheader.jsp";
 		}
 
 	}
@@ -258,8 +289,7 @@ public class MemberManager {
 		Secure sr = new Secure();
 		String peid = request.getParameter("peid");
 		String pepwd = request.getParameter("pepwd");
-		byte a = 2;
-		ArrayList<MemberDto> list = mDao.memberList(a, peid);
+		ArrayList<MemberDto> list = mDao.memberSearch(peid);
 		String sal = list.get(0).getPeSalt();
 		String[] userInfo = sr.securePwd(pepwd, sal);
 		String re = "beforeWithdrawalCheck.jsp";
@@ -316,8 +346,7 @@ public class MemberManager {
 			HttpSession session = request.getSession();
 			peid = (String) session.getAttribute("peid");
 		}
-		byte a = 2;
-		ArrayList<MemberDto> list = mDao.memberList(a, peid);
+	ArrayList<MemberDto> list = mDao.memberSearch(peid);
 		request.setAttribute("peid", list.get(0).getPeId());
 		request.setAttribute("pename", list.get(0).getPeName());
 		request.setAttribute("pephonenumber", list.get(0).getPePhoneNumber());
@@ -360,7 +389,7 @@ public class MemberManager {
 		MemberDao mDao = new MemberDao();
 		String peid = request.getParameter("peid");
 		String pepwd = request.getParameter("pepwd");
-		ArrayList<MemberDto> list = mDao.memberList((byte) 2, peid);
+		ArrayList<MemberDto> list = mDao.memberSearch(peid);
 		String salt = list.get(0).getPeSalt();
 		String hx[] = sr.securePwd(pepwd, salt);
 		if (hx[1].equals(list.get(0).getPePwd())) {
@@ -389,6 +418,38 @@ public class MemberManager {
 
 		}
 
+	}
+
+	public String index() {
+		String status=loginCookie();
+		if(status.equals("login")) {
+			String path = "index.jsp?nav=loginheader.jsp" ;
+			HttpSession session = request.getSession();
+			if(session.getAttribute("pepower")!=null) {
+			String pepower=(String)session.getAttribute("pepower");
+			path = (pepower.equals("1")) ? "index.jsp?nav=loginheader.jsp" : "index.jsp?nav=adminheader.jsp"; 
+			}
+			return path;
+		}else {
+			return "index.jsp?nav=logoutheader.jsp";
+		}
+	}
+
+	public String loginForm() {
+		String status=loginCookie();
+		if(status.equals("login")) {
+			return "index.jsp?nav=loginheader.jsp";
+		}else {
+			return "loginForm.jsp";
+		}
+		
+		
+		
+	}
+
+	public String tryLogout() {
+		logout();
+		return "index.jsp?nav=logoutheader.jsp"; 
 	}
 
 }

@@ -26,7 +26,7 @@ public class BoardManager {
 		bt.setBoAvailable(1);
 		boolean re = ba.boardInsert(bt);
 		if (re) {
-
+			
 		}
 		return null;
 	}
@@ -62,7 +62,7 @@ public class BoardManager {
 	}
 
 	private String makeHtmlPage(int cur) {
-		BoardPage bp = new BoardPage();
+		Page bp = new Page();
 		BoardDao bDao = new BoardDao();
 		int total=bp.totlaPage(bDao.total(),10);
 		int start=bp.startPage(cur,10);
@@ -78,10 +78,8 @@ public class BoardManager {
 			sb.append("<");
 			sb.append("</a>");
 			sb.append("</th>");
-
-		
 		}
-		for (start = start; start <= end; start++) {
+		for (start=start; start <= end; start++) {
 			sb.append("<th>");
 			sb.append("<a href='./listPage?page=");
 			sb.append(start);
@@ -98,7 +96,6 @@ public class BoardManager {
 			sb.append(">");
 			sb.append("</a>");
 			sb.append("</th>");
-
 		}
 		sb.append("</tr>");
 		sb.append("</table>");
@@ -135,7 +132,6 @@ public class BoardManager {
 			sb.append(al.get(i).getBoDate());
 			sb.append("</th>");
 			sb.append("</tr>");
-
 		}
 
 		sb.append("</table>");

@@ -32,6 +32,47 @@ public class MemberDao {
 		}
 	}
 
+	
+	
+	
+	public ArrayList<MemberDto> memberList(int start,int end){
+		String sql ="SELECT * FROM ( SELECT ROWNUM NUM ,N. * FROM (SELECT * FROM PEMEMBER ORDER BY PEJOINDATE DESC) N ) WHERE NUM BETWEEN ? AND ? AND PESTATUS=1";
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setInt(1,start);
+			psmt.setInt(2,end);
+			rs=psmt.executeQuery();
+			MemberDto mDto =null;
+			ArrayList<MemberDto> al = new ArrayList<>();
+			while(rs.next()) {
+				mDto=new MemberDto();
+				System.out.println(rs.getString("peid"));
+				mDto.setPeId(rs.getString("peid"));
+				mDto.setPePwd(rs.getString("pepwd"));
+				mDto.setPeName(rs.getString("pename"));
+				mDto.setPeAge(rs.getInt("peage"));
+				mDto.setPePhoneNumber(rs.getString("pephonenumber"));
+				mDto.setPeMail(rs.getString("peemail"));
+				mDto.setPeSequence(rs.getString("pesequence"));
+				mDto.setPePower(rs.getString("pepower"));
+				mDto.setPeSalt(rs.getString("pesalt"));
+				mDto.setPestatus(rs.getString("pestatus"));
+				mDto.setPejoinDate(rs.getString("pejoindate"));
+				al.add(mDto);
+			}
+			if(al.get(0).getPeId()!=null) {
+				return al;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return null;
+	}
+	
+	
 	public boolean memberInsert(MemberDto mDto) {
 		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','2',?,SYSDATE)"; // 0을 값으로 준건
 																											// pestatus인데
@@ -108,15 +149,13 @@ public class MemberDao {
 		return 2;
 	}
 
-	public ArrayList<MemberDto> memberList(byte a, String parameter) { // 인자가 1일경우 단순 select문
-		String sql = (a == 1) ? "SELECT * FROM PEMEMBER WHERE PESTATUS=1" : "SELECT * FROM PEMEMBER WHERE PEID = (?)";
+	public ArrayList<MemberDto> memberSearch(String parameter) { 
+		String sql ="SELECT * FROM PEMEMBER WHERE PEID = (?)";
 		ArrayList<MemberDto> mList = new ArrayList<>();
 		MemberDto mDto = null;
 		try {
 			psmt = con.prepareStatement(sql);
-			if (a != 1) { // 1이 아닐경우 아이디로 찾는경우라 ?에 값을 넣는 작업이 필요하다
 				psmt.setString(1, parameter);
-			}
 			rs = psmt.executeQuery();
 			while (rs.next()) { // mDto 객체가 어디서 생성되는지에 따라 mList에 같은 값만 들어갈수 있으니 조심
 				mDto = new MemberDto();
@@ -129,9 +168,8 @@ public class MemberDao {
 				mDto.setPeSequence(rs.getString("pesequence"));
 				mDto.setPePower(rs.getString("pepower"));
 				mDto.setPeSalt(rs.getString("pesalt"));
-				System.out.println(rs.getString("peid"));
-				System.out.println(rs.getString("pestatus"));
 				mDto.setPestatus(rs.getString("pestatus"));
+				mDto.setPejoinDate(rs.getString("pejoindate"));
 				mList.add(mDto);
 			}
 			if (mDto.getPeId() != null) {
@@ -323,27 +361,42 @@ public class MemberDao {
 	}
 
 
-	/*
-	 * public void memberInfoUpdateForm(String peid) { String sql =
-	 * "SELECT * FROM PEMEMBER WHERE PEID=?";
-	 * 
-	 * try { psmt=con.prepareStatement(sql); psmt.setString(1,peid);
-	 * rs=psmt.executeQuery(); HashMap<String,String> hmap = new HashMap<>();
-	 * while(rs.next()) { hmap.put("peid",rs.getString("peid"));
-	 * hmap.put("pename",rs.getString("pename"));
-	 * hmap.put("pephonenumber",rs.getString("pephonenumber"));
-	 * hmap.put("peemail",rs.getString("peemail")); } } catch (SQLException e) {
-	 * e.printStackTrace(); }
-	 * 
-	 * 
-	 * }
-	 */
 
-	/*
-	 * public void memberSearch(String parameter) { String sql =
-	 * "SELECT * FROM PEMEMBER WHERE ID = (?)"; try { psmt =
-	 * con.prepareStatement(sql); psmt.setString(1, parameter); rs =
-	 * psmt.executeQuery(); while (rs.next()) ; } catch (Exception e) { } }
-	 */
+
+	public int toal() {
+		String sql = "SELECT COUNT(*) as cnt FROM PEMEMBER WHERE PESTATUS=1";	
+		try {
+			psmt=con.prepareStatement(sql);
+			rs=psmt.executeQuery();
+			int total =0 ;
+			if(rs.next()) {
+				total = Integer.parseInt(rs.getString("cnt"));
+			}
+			return total;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
+		
+		
+		return 0;
+	}
+
+
 
 }
