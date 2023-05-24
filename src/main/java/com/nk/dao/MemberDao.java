@@ -46,7 +46,6 @@ public class MemberDao {
 			ArrayList<MemberDto> al = new ArrayList<>();
 			while(rs.next()) {
 				mDto=new MemberDto();
-				System.out.println(rs.getString("peid"));
 				mDto.setPeId(rs.getString("peid"));
 				mDto.setPePwd(rs.getString("pepwd"));
 				mDto.setPeName(rs.getString("pename"));
@@ -293,7 +292,6 @@ public class MemberDao {
 	public boolean mialChekFin(String pemail) {
 		String sql = "UPDATE PEMEMBER SET PESTATUS=1 WHERE PEEMAIL=?";
 		try {
-			System.out.println(pemail);
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, pemail);
 			int re = psmt.executeUpdate();

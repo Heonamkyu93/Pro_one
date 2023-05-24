@@ -5,23 +5,17 @@
 <head>
 <meta charset="UTF-8">
 <title>회원가입 페이지</title>
-
-<!-- CSS -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-
-<!-- 테마 -->
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-
-<!-- 자바스크립트 -->
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
 </head>
 <body>
 <jsp:include page="logoutheader.jsp"></jsp:include>
+	
+	<section>
+	
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-1"></div>
@@ -38,9 +32,9 @@
 					<form class="form-inline" role="form" action="./memberInsert"
 						onsubmit="return validCheck()" method="post">
 
-						<table class="table">
+						<table class="table table-bordered">
 							<tr>
-								<td colspan="5">
+								<td colspan="3">
 									<div>
 										<font color="#f67001" size=6>&nbsp;&nbsp;01</font> <font
 											size=5>&nbsp;&nbsp;회원정보</font>
@@ -57,7 +51,6 @@
 								<td><input type="button" value="중복확인"
 									onclick="dupliCheck();"><br> <br> <strong
 									id='dupnotic'>중복확인은 필수입니다.</strong></td>
-								<td></td>
 							</tr>
 							<tr align="left">
 								<td><font size=4>&nbsp;비&nbsp;&nbsp;밀&nbsp;&nbsp;번&nbsp;&nbsp;호&nbsp;:</font></td>
@@ -122,7 +115,11 @@
 			</div>
 		</div>
 	</div>
+	</section>
 	<jsp:include page="footer.jsp"></jsp:include>
+	<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+	
 	<script>
 		let duplem = 1;    //이메일중복체크 1이면  onsubmit시 validCheck에서 걸리게 되어있음 중복체크를 해도 값이 변하면 못넘어감
 		let duplch = 1;   // 아이디중복체크 기본값1이고 값이 1이면 onsubmit시 validCheck에서 걸리게 되어있음 중복체크를해도 값이 변하면 onchange 펑션 change에서 값이 1으로 변경되어서 못넘어감
@@ -302,5 +299,6 @@
 
 		}
 	</script>
+	
 </body>
 </html>

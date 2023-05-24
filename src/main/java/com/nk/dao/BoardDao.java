@@ -35,12 +35,13 @@ public class BoardDao {
 	}
 
 	public boolean boardInsert(BoardDto bt) {
-		String sql = "INSERT INTO PEBOARD VALUES ('BONUMBERINGSEQ.NEXTVAL',?,?" + 1 + "SYSDATE,?)";
+		String sql = "INSERT INTO PEBOARD VALUES (bonumeringseq.NEXTVAL,?,?,?,SYSDATE,?)";
 		try {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, bt.getBoTitle());
 			psmt.setString(2, bt.getBoContent());
-			psmt.setString(3, bt.getPeid());
+			psmt.setInt(3, bt.getBoAvailable());
+			psmt.setString(4, bt.getPeid());
 			int re = psmt.executeUpdate();
 			if (re != 0) {
 				return true;

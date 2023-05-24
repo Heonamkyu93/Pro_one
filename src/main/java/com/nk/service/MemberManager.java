@@ -40,7 +40,7 @@ public class MemberManager {
 		if (re) {
 			request.setAttribute("pemail", pemail);
 			mailCertiForm(pemail);
-			return "mailCertification.jsp"; // %%%%% 회원가입후 나올 페이지 만들어야함 메일인증 페이지
+			return "mailCertification.jsp"; 
 		} else {
 			return "index.jsp";
 		}
@@ -101,10 +101,6 @@ public class MemberManager {
 		}
 		int cur = 1;
 		int listco =1;
-		if(request.getParameter("page")!=null) {
-			cur=Integer.parseInt(request.getParameter("page"));
-			listco=cur*10-9;
-		}
 		MemberDao mDao = new MemberDao();
 		String memberTable =makeHtmlList(mDao.memberList(listco,listco+9));
 		String memPage = makeHtmlPage(cur);
@@ -120,82 +116,86 @@ public class MemberManager {
 		int start = mp.startPage(cur, 10);
 		int end= mp.endPage(cur, 10, total);
 		StringBuilder sb = new StringBuilder();
-		sb.append("<table border='1'>");
-		sb.append("<tr>");
+		sb.append("<ul class='pagination'>");
 		if(mp.pre(start)) {
-			sb.append("<th>");
-			sb.append("<a href='./listPage?page=");
+			sb.append("<li class='page-item'>");
+			sb.append("<a class=page-link' href='./listPage?page=");
 			sb.append(start-1);
-			sb.append("'>");
-			sb.append("<");
+			sb.append("'aria-label='Previous'>");
+			sb.append("<span aria-hidden='true'>&laquo;</span>");
 			sb.append("</a>");
-			sb.append("</th>");
+			sb.append("</li>");
 		}
 		for (start=start; start <= end; start++) {
-			sb.append("<th>");
-			sb.append("<a href='./listPage?page=");
+			sb.append( "<li class='page-item'>");
+			sb.append("<a class='page-link' href='./listPage?page=");
 			sb.append(start);
 			sb.append("'>");
 			sb.append(start);
 			sb.append("</a>");
-			sb.append("</th>");
+			sb.append("</li>");
 		}
 		if(mp.next(total, end)) {
-			sb.append("<th>");
-			sb.append("<a href='./listPage?page=");
+			sb.append("<li class='page-item'>");
+			sb.append("<a class=page-link' href='./listPage?page=");
 			sb.append(start);
-			sb.append("'>");
-			sb.append(">");
+			sb.append("'aria-label='Next'>");
+			sb.append("<span aria-hidden='true'>&raquo;</span>");
 			sb.append("</a>");
-			sb.append("</th>");
+			sb.append("</li>");
 		}
-		sb.append("</tr>");
-		sb.append("</table>");
 		return sb.toString();
 	}
 
 	private String makeHtmlList(ArrayList<MemberDto> mList) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<table border='1' class='table'>");
-		sb.append("<thead>");
-		sb.append("<tr>");
-		sb.append("<th>");
+		
+		sb.append("<div class='container'>");
+		
+		sb.append("<div class='row'>");
+		sb.append("<div class='col-md-2'>");
+		sb.append("</div>");
+		sb.append("<div class='col-md-1 b'>");
 		sb.append("회원번호");
-		sb.append("</th>");
-		sb.append("<th>");
+		sb.append("</div>");
+		sb.append("<div class='col-md-4 b'>");
 		sb.append("아이디");
-		sb.append("</th>");
-		sb.append("<th>");
+		sb.append("</div>");
+		sb.append("<div class='col-md-1 b'>");
 		sb.append("이름");
-		sb.append("</th>");
-		sb.append("<th>");
+		sb.append("</div>");
+		sb.append("<div class='col-md-2 b'>");
 		sb.append("가입일");
-		sb.append("</th>");
-		sb.append("</tr>");
-		sb.append("</thead>");
-		sb.append("<tbody>");
+		sb.append("</div>");
+		sb.append("<div class='col-md-2'>");
+		sb.append("</div>");
+		sb.append("</div>");
 		for (int i = 0; i < mList.size(); i++) {
-			sb.append("<tr>");
-			sb.append("<td>");
+			
+			sb.append("<div class='row'>");
+			sb.append("<div class='col-md-2'>");
+			sb.append("</div>");
+			sb.append("<div class='col-md-1 b'>");
 			sb.append(mList.get(i).getPeSequence());
-			sb.append("</td>");
-			sb.append("<td>");
+			sb.append("</div>");
+			sb.append("<div class='col-md-4 b'>");
 			sb.append("<a href='./memberInfoUpdateFrom?peid=");
 			sb.append(mList.get(i).getPeId());
 			sb.append("'>");
 			sb.append(mList.get(i).getPeId());
 			sb.append("</a>");
-			sb.append("</td>");
-			sb.append("<td>");
+			sb.append("</div>");
+			sb.append("<div class='col-md-1 b'>");
 			sb.append(mList.get(i).getPeName());
-			sb.append("</td>");
-			sb.append("<td>");
+			sb.append("</div>");
+			sb.append("<div class='col-md-2 b'>");
 			sb.append(mList.get(i).getPejoinDate());
-			sb.append("</td>");
-			sb.append("</tr>");
+			sb.append("</div>");
+			sb.append("<div class='col-md-2'>");
+			sb.append("</div>");
+			sb.append("</div>");
 		}
-		sb.append("<tbody>");
-		sb.append("</table>");
+		sb.append("</div>");
 		return sb.toString();
 	}
 
@@ -273,8 +273,7 @@ public class MemberManager {
 			session.setAttribute("pepower", list.get(0).getPePower());
 			Cookie ck = new Cookie("peid", peid);
 			response.addCookie(ck);
-			System.out.println(list.get(0).getPePower());
-			String path = (list.get(0).getPePower().equals("3"))?"index.jsp?nav=adminheader.jsp":"index.jsp?nav=loginheader.jsp";
+			String path = (list.get(0).getPePower().equals("3"))?"adminIndex.jsp":"index.jsp?nav=loginheader.jsp";
 			return path;
 		} else {
 
@@ -305,20 +304,6 @@ public class MemberManager {
 
 	}
 
-	/*
-	 * public String WithdrawalCheck() { // 회원탈퇴메소드 MemberDao mDao = new
-	 * MemberDao(); MemberDto mDto = new MemberDto(); Secure sr = new Secure();
-	 * String peid = request.getParameter("peid"); String pepwd =
-	 * request.getParameter("pepwd"); byte a = 2; ArrayList<MemberDto> list =
-	 * mDao.memberList(a, peid); String sal = list.get(0).getPeSalt(); String[]
-	 * userInfo = sr.securePwd(pepwd, sal); String re = "beforeWithdrawalCheck.jsp";
-	 * pepwd = userInfo[1]; mDto.setPeId(peid); mDto.setPePwd(pepwd); if
-	 * (pepwd.equals(list.get(0).getPePwd())) { // 두값이 같으면 회원탈퇴처리 re =
-	 * mDao.WithdrawalCheck(mDto); return re; } else { // 틀리다면 beforewi 로다시 return
-	 * re; }
-	 * 
-	 * }
-	 */
 
 	public String memberInfoUpdate() {
 		MemberDao mDao = new MemberDao();
@@ -424,13 +409,11 @@ public class MemberManager {
 		String status=loginCookie();
 		if(status.equals("login")) {
 			String path = "index.jsp?nav=loginheader.jsp" ;
-			HttpSession session = request.getSession();
-			if(session.getAttribute("pepower")!=null) {
-			String pepower=(String)session.getAttribute("pepower");
-			path = (pepower.equals("1")) ? "index.jsp?nav=loginheader.jsp" : "index.jsp?nav=adminheader.jsp"; 
-			}
-			return path;
-		}else {
+			HttpSession session=request.getSession();
+			String power=(String)session.getAttribute("pepower");
+			if(power.equals("3")) path="adminIndex.jsp";
+			return path;}
+		else {
 			return "index.jsp?nav=logoutheader.jsp";
 		}
 	}

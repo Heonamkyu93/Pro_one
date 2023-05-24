@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.nk.service.BoardManager;
 
-@WebServlet({ "/board","/boardList","/listPage" })
+@WebServlet({ "/board","/boardList","/listPage","/boardInsert","/boardInsertForm","/filetest" })
 public class BoardController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -26,17 +26,21 @@ public class BoardController extends HttpServlet {
 		int redifo = 1;
 		BoardManager bm = new BoardManager(request,response);
 		switch (url) {
-		case "/boardInsert":
+		case "/boardInsert":			//게시판 디비에 입력
 			path = bm.boardInsert();
+			redifo=2;
 			break;
-		case "/boardInsertForm":
-			path = "";
+		case "/boardInsertForm":		//게시판 입력폼으로 
+			path = bm.boardInsertForm();
 			break;
-		case "/boardList":
+		case "/boardList":				//게시판 리스트 첫화면
 			path = bm.boardList();
 			break;
-		case "/listPage":
+		case "/listPage":				//게시판 페이징에서 앞,뒤로가기
 			path = bm.boardList();
+			break;
+		case "/filetest":				//게시판 페이징에서 앞,뒤로가기
+			path = bm.filetest();
 			break;
 		}
 

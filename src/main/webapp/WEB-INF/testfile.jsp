@@ -7,16 +7,9 @@
 <title>Insert title here</title>
 </head>
 <body>
-<header>
-<nav><h2>joinForm</h2></nav>
-</header>
-<main>
-
-
-
-
-
-</main>
-<footer></footer>
+<form action="./filetest" method="post" enctype="multipart/form-data">
+<input type="file" name='file' value="파일">
+<input type="submit" value="전송">
+</form>
 </body>
 </html>
