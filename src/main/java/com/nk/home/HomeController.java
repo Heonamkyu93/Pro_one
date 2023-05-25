@@ -42,6 +42,7 @@ public class HomeController extends HttpServlet {
 			break;
 		case "/login":		// 로그인
 			path = mm.login();
+			selforedi = 2;
 			break;
 		case "/memberInsert":		//회원가입 db에 입력
 			path = mm.memberInsert();

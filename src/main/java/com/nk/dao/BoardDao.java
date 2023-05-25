@@ -34,41 +34,32 @@ public class BoardDao {
 		}
 	}
 
-	public boolean boardInsert(BoardDto bt) {
+	public String boardInsert(BoardDto bt) {
 		String sql = "INSERT INTO PEBOARD VALUES (bonumeringseq.NEXTVAL,?,?,?,SYSDATE,?)";
 		try {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, bt.getBoTitle());
 			psmt.setString(2, bt.getBoContent());
-			psmt.setInt(3, bt.getBoAvailable());
-			psmt.setString(4, bt.getPeid());
+			psmt.setString(3, bt.getPeid());
+			psmt.setInt(4, bt.getBoAvailable());
 			int re = psmt.executeUpdate();
 			if (re != 0) {
-				return true;
+				String sql2="SELECT BONUMERINGSEQ.CURRVAL FROM DUAL";
+				psmt=con.prepareStatement(sql2);
+				rs=psmt.executeQuery();
+				if(rs.next()) {
+					String seq=rs.getString("currval");
+					return seq; 
+				}
+				
 			} else {
-				return false;
+				return "n";
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			if (rs != null)
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			if (psmt != null)
-				try {
-					psmt.close();
-				} catch (Exception e) {
-				}
-			if (con != null)
-				try {
-					con.close();
-				} catch (Exception e) {
-				}
-		}
-		return false;
+		} 
+		return "n";
 	}
 
 	public boolean boardDel() {
@@ -190,6 +181,23 @@ public class BoardDao {
 		}
 
 		return 0;
+	}
+
+	public void fileInset(BoardDto bt2) {
+		String sql = "INSERT INTO BOARDFILE VALUES(?,?,?)";
+		try {
+			psmt = con.prepareStatement(sql);
+			psmt.setString(1, bt2.getBoSequence());
+			psmt.setString(2, bt2.getBoFileOri());
+			psmt.setString(3, bt2.getBoFileSer());
+			int re = psmt.executeUpdate();
+			if (re != 0) {
+				System.out.println("인서트성공");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

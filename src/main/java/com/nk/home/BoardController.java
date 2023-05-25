@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.nk.service.BoardManager;
+import com.nk.service.UpFile;
 
 @WebServlet({ "/board","/boardList","/listPage","/boardInsert","/boardInsertForm","/filetest" })
 public class BoardController extends HttpServlet {
@@ -18,13 +19,14 @@ public class BoardController extends HttpServlet {
 	protected void doProcess(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 
-		request.setCharacterEncoding("utf-8"); // 한글 깨지는걸 방지하기 위해 utf-8로 인코딩
+		request.setCharacterEncoding("utf-8"); // 한글 깨지는걸 방지하기 위해 utf-8로 인코딩	
 		String uri = request.getRequestURI();
-		String con = request.getContextPath();
+		String con = request.getContextPath();							///########  어드민은 그냥 인덱스에서만 찍고 다른 페이지 싹 없애고 어드민 관련 코드 싹 걷어내야함 게시판등록 dao 한메소드에서 if문걸어서 싹 처리해야함
 		String url = uri.substring(con.length());
 		String path = null;
 		int redifo = 1;
 		BoardManager bm = new BoardManager(request,response);
+		UpFile f = new UpFile(request,response);
 		switch (url) {
 		case "/boardInsert":			//게시판 디비에 입력
 			path = bm.boardInsert();
@@ -39,9 +41,7 @@ public class BoardController extends HttpServlet {
 		case "/listPage":				//게시판 페이징에서 앞,뒤로가기
 			path = bm.boardList();
 			break;
-		case "/filetest":				//게시판 페이징에서 앞,뒤로가기
-			path = bm.filetest();
-			break;
+		
 		}
 
 

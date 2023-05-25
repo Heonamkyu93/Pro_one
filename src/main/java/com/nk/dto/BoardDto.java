@@ -8,6 +8,54 @@ public class BoardDto {
 	private String boDate;
 	private int boAvailable;
 	private String boSequence;
+	private int boHit;
+	private int boLike;
+	private int disLike;
+	private String boFileOri; 
+	private String boFileSer;
+	
+	
+	
+	
+	public int getBoHit() {
+		return boHit;
+	}
+
+	public void setBoHit(int boHit) {
+		this.boHit = boHit;
+	}
+
+	public int getBoLike() {
+		return boLike;
+	}
+
+	public void setBoLike(int boLike) {
+		this.boLike = boLike;
+	}
+
+	public int getDisLike() {
+		return disLike;
+	}
+
+	public void setDisLike(int disLike) {
+		this.disLike = disLike;
+	}
+
+	public String getBoFileOri() {
+		return boFileOri;
+	}
+
+	public void setBoFileOri(String boFileOri) {
+		this.boFileOri = boFileOri;
+	}
+
+	public String getBoFileSer() {
+		return boFileSer;
+	}
+
+	public void setBoFileSer(String boFileSer) {
+		this.boFileSer = boFileSer;
+	}
 
 	public void setPeid(String peid) {
 		this.peid = peid;
