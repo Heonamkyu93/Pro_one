@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
+import com.nk.dto.BoardDto;
 import com.nk.dto.MemberDto;
 
 public class MemberDao {
@@ -394,6 +396,10 @@ public class MemberDao {
 		
 		return 0;
 	}
+
+
+
+
 
 
 

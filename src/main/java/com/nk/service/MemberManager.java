@@ -273,8 +273,8 @@ public class MemberManager {
 			session.setAttribute("pepower", list.get(0).getPePower());
 			Cookie ck = new Cookie("peid", peid);
 			response.addCookie(ck);
-			String path = (list.get(0).getPePower().equals("3"))?"adminIndex.jsp":"index.jsp?nav=loginheader.jsp";
-			return path;
+			
+			return "index.jsp?nav=loginheader.jsp";
 		} else {
 
 			return "loginForm.jsp?nav=logoutheader.jsp";
@@ -315,7 +315,7 @@ public class MemberManager {
 
 		boolean re = mDao.memberInfoUpdate(mDto);
 		if (re) {
-			return "index.jsp";
+			return "index.jsp?nav=loginheader.jsp";
 		} else {
 			return "personalInfo.jsp";
 		}
@@ -408,11 +408,8 @@ public class MemberManager {
 	public String index() {
 		String status=loginCookie();
 		if(status.equals("login")) {
-			String path = "index.jsp?nav=loginheader.jsp" ;
 			HttpSession session=request.getSession();
-			String power=(String)session.getAttribute("pepower");
-			if(power.equals("3")) path="adminIndex.jsp";
-			return path;}
+			return "index.jsp?nav=loginheader.jsp" ;}
 		else {
 			return "index.jsp?nav=logoutheader.jsp";
 		}

@@ -21,7 +21,7 @@
 	</style>
 </head>
 <body>
-<jsp:include page="adminheader.jsp"></jsp:include>
+<jsp:include page="loginheader.jsp"></jsp:include>
 	<section>
 	${mList}
 	<div class='container'id='p'>

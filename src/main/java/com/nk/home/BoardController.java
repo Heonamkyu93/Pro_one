@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.nk.service.BoardManager;
 import com.nk.service.UpFile;
 
-@WebServlet({ "/board","/boardList","/listPage","/boardInsert","/boardInsertForm","/filetest" })
+@WebServlet({ "/boardList","/listPage","/boardInsert","/boardInsertForm","/boardInside" })
 public class BoardController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,9 @@ public class BoardController extends HttpServlet {
 		case "/listPage":				//게시판 페이징에서 앞,뒤로가기
 			path = bm.boardList();
 			break;
-		
+		case "/boardInside":
+			path = bm.boardInside();
+			break;
 		}
 
 

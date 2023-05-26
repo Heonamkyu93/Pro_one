@@ -59,11 +59,12 @@ i {
 				<div class='row'>
 				
 				<div class="col-md-5" >
-					<input type="file" name='bofile' value="파일" style="margin: 15px"
-						><i>파일 업로드</i>
+					<input type="file" name='bofile1' value="파일" style="margin: 15px">
+					<input type="file" name='bofile2' value="파일" style="margin: 15px">
+					<i>파일 업로드</i>
 					</div>
 					<div class="col-md-5">
-						<input type="file" name='bofile' value="이미지" 
+						<input type="file" name='bofile3' value="이미지" 
 							 style="margin: 15px"> <i>이미지 업로드</i><br>
 						<i>파일용량은 10mb가 최대입니다.</i> 
 					</div>

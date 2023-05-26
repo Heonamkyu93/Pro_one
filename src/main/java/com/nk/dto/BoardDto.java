@@ -10,13 +10,39 @@ public class BoardDto {
 	private String boSequence;
 	private int boHit;
 	private int boLike;
-	private int disLike;
+	private int bodisLike;
 	private String boFileOri; 
 	private String boFileSer;
+	private String repeid;
+	private String reple;
+	private String redate;
+	private String reSequence;
 	
 	
-	
-	
+	public String getRepeid() {
+		return repeid;
+	}
+
+	public void setRepeid(String repeid) {
+		this.repeid = repeid;
+	}
+
+	public String getReple() {
+		return reple;
+	}
+
+	public void setReple(String reple) {
+		this.reple = reple;
+	}
+
+	public String getRedate() {
+		return redate;
+	}
+
+	public void setRedate(String redate) {
+		this.redate = redate;
+	}
+
 	public int getBoHit() {
 		return boHit;
 	}
@@ -33,12 +59,22 @@ public class BoardDto {
 		this.boLike = boLike;
 	}
 
-	public int getDisLike() {
-		return disLike;
+	
+
+	public int getBodisLike() {
+		return bodisLike;
 	}
 
-	public void setDisLike(int disLike) {
-		this.disLike = disLike;
+	public void setBodisLike(int bodisLike) {
+		this.bodisLike = bodisLike;
+	}
+
+	public String getReSequence() {
+		return reSequence;
+	}
+
+	public void setReSequence(String reSequence) {
+		this.reSequence = reSequence;
 	}
 
 	public String getBoFileOri() {
