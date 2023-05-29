@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +35,11 @@ public class BoardManager {
 		System.out.println(upPath);
 		int size = 10 * 1024 * 1024;
 		// PEBOARD 테이블에 넣을값
+		File f = new File(upPath);
+		if (!f.isDirectory()) {
+			System.out.println("폴더없음");
+			f.mkdir();
+		}
 		try {
 			MultipartRequest multi = new MultipartRequest(request, upPath, size, "utf-8",
 					new DefaultFileRenamePolicy());
@@ -54,11 +61,7 @@ public class BoardManager {
 
 					System.out.println("오리지날파일이름" + boFileOri);
 					System.out.println("서버파일이름" + boFileSer);
-					File f = new File(upPath);
-					if (!f.isDirectory()) {
-						System.out.println("폴더없음");
-						f.mkdir();
-					}
+
 					bt2 = new BoardDto();
 					// BOARDFILE 테이블에넣을값 //시퀀스값을 구해와야함
 					bt2.setBoSequence(seq);
@@ -237,29 +240,79 @@ public class BoardManager {
 			request.setAttribute("bocontent", ll.get(0).getBoContent());
 			request.setAttribute("botitle", ll.get(0).getBoTitle());
 			request.setAttribute("bodate", ll.get(0).getBoDate());
-			request.setAttribute("bosequence", ll.get(0).getBoSequence());	
-			String reple=makeHtmlReple(ll);
-			request.setAttribute("reple",reple );
-		if(ll.get(0).getReSequence()!=null) {	//리플시퀀스가 널이아니면 댓글가져오기
-			bDao.getReple(bosequence);
-		}if(ll.get(0).getBoFileOri()!=null) {	// 파일도 마찬가지
-			bDao.getFile(bosequence);
-		}
-				
-			
+			request.setAttribute("bosequence", ll.get(0).getBoSequence());
+			String reple = makeHtmlReple(ll);
+			request.setAttribute("reple", reple);
+			if (ll.get(0).getReSequence() != null) { // 리플시퀀스가 널이아니면 댓글가져오기
+			//	bDao.getReple(bosequence);
+			}
+			if (ll.get(0).getBoFileOri() != null) { // 파일도 마찬가지
+				bDao.getFile(bosequence);
+			}
+
 			return "boardInside.jsp";
-			
-			
-		}else {
+
+		} else {
 			return "index.jsp?nav=logoutheader.jsp";
 		}
-		
-		
-		
+
 	}
 
 	private String makeHtmlReple(LinkedList<BoardDto> ll) {			//댓글이 여러개일수도 있고 없을수도있음 댓글이 한개여도 파일이 여러개면 여러개가 담김   파일도 마찬가지  
 		StringBuilder sb = new StringBuilder();
+		LinkedHashSet<String> lhs = new LinkedHashSet<>();
+		for(int i=0;i<ll.size();i++) {
+			String reple=ll.get(i).getRepeid() + "ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getReple()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getRedate()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getReSequence();
+			lhs.add(reple);
+		}
+		String d ="";
+		d.split(d, 0);
+		BoardDto[] repleinfo = new BoardDto[lhs.size()];
+		Iterator <String> iter = lhs.iterator();
+		String re[] = new String[lhs.size()];
+		
+		/* for(int i=0;i<lhs.size();i++) {
+			 String rePlus=iter.next(); 
+			 String k[]=rePlus.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",4);
+			 System.out.print(k[0]+",");
+			 System.out.print(k[1]+",");
+			 System.out.print(k[2]+",");
+			 System.out.print(k[3]+",");
+			 System.out.println();
+		 
+		 }*/
+		
+		
+			
+			 while(iter.hasNext()) { 
+				 String rePlus=iter.next(); 
+			 String k[]=rePlus.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",4);
+			 System.out.print(k[0]+",");
+			 System.out.print(k[1]+",");
+			 System.out.print(k[2]+",");
+			 System.out.print(k[3]+",");
+			 System.out.println();
+		  
+			 
+			 
+			 
+			 
+			 }
+				
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		//if(ll.get(i).getReSequence().equals(ll.get(j).getReSequence())) {
 		
 		

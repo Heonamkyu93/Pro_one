@@ -156,7 +156,7 @@ public class BoardDao {
 				bDto.setBoAvailable(rs.getInt("boavailable"));
 				al.add(bDto);
 			}
-			if (al.get(0).getPeid() != null) {
+			if (al!= null) {
 				return al;
 			}
 		} catch (SQLException e) {
@@ -201,22 +201,11 @@ public class BoardDao {
 	}
 
 	public LinkedList<BoardDto> boardInside(String bosequence) {
-		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE
-		// ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE
-		// ,R.REPEID,R.REPLE,R.REDATE FROM PEBOARD P , BOARDFILE F , boardcount C ,
-		// boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE
-		// AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ?";
-		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE
-		// ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE
-		// ,R.REPEID,R.REPLE,R.REDATE,R.reSequence FROM PEBOARD P , BOARDFILE F ,
-		// boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND
-		// C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE =
-		// ? ORDER BY REDATE DESC";
-		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE
-		// ,C.BOHIT,C.BOLIKE,C.BODISLIKE FROM PEBOARD P ,boardcount C WHERE
-		// p.bosequence= c.bosequence AND P.BOSEQUENCE =? ";
-		String sql = "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,C.BOHIT,C.BOLIKE,C.BODISLIKE FROM PEBOARD P ,boardcount C WHERE p.bosequence= c.bosequence  AND P.BOSEQUENCE = ?"; 
-		LinkedList<BoardDto> ll = new LinkedList<>();
+		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ?";
+		
+		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE,C.BOHIT,C.BOLIKE,C.BODISLIKE FROM PEBOARD P ,boardcount C WHERE p.bosequence= c.bosequence AND P.BOSEQUENCE =? ";
+		String sql =  "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE,R.reSequence FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ? ORDER BY REDATE DESC"; 
+		LinkedList<BoardDto> ll = new LinkedList<>();																															 
 		BoardDto bDto;
 		try {
 			psmt = con.prepareStatement(sql);			// 리스트말고 dto로 바꿀것 
@@ -275,27 +264,19 @@ public class BoardDao {
 			}
 	}
 
-	public void getReple(String bosequence) {
-		String sql = "select * from boardreple where bosequence=? order by redate desc;";
-		LinkedList< BoardDto> ll = new LinkedList<>();
-		BoardDto bDto;
-		try {
-			psmt=con.prepareStatement(sql);
-			psmt.setString(1, bosequence);
-			rs=psmt.executeQuery();
-			while(rs.next()) {
-				bDto = new BoardDto();
-				bDto.setReSequence(rs.getString("reSequence"));
-				bDto.setRepeid(rs.getString("REPEID"));
-				bDto.setReple(rs.getString("REPLE"));
-				bDto.setRedate(rs.getString("REDATE"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	
-	}
-
+	/*
+	 * public void getReple(String bosequence) { String sql =
+	 * "select * from boardreple where bosequence=? order by redate desc;";
+	 * LinkedList< BoardDto> ll = new LinkedList<>(); BoardDto bDto; try {
+	 * psmt=con.prepareStatement(sql); psmt.setString(1, bosequence);
+	 * rs=psmt.executeQuery(); while(rs.next()) { bDto = new BoardDto();
+	 * bDto.setReSequence(rs.getString("reSequence"));
+	 * bDto.setRepeid(rs.getString("REPEID")); bDto.setReple(rs.getString("REPLE"));
+	 * bDto.setRedate(rs.getString("REDATE")); } } catch (SQLException e) {
+	 * e.printStackTrace(); }
+	 * 
+	 * }
+	 */
 	public void getFile(String bosequence) {			//맵이나 
 		String sql="select * from boardfile where bosequence=?";
 		
