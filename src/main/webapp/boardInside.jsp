@@ -86,30 +86,39 @@ border: 1px solid #E6E6E6;
 					v${botitle }
 			</div>
 		</div>
+		<input type="hidden" value=${bosequence} id='bosequence'>
 		<div class='row'>
-내용<br><br>
+
+	<div class='col-md-2'>내용</div>
+	<div class='col-md-4'></div>
+	<div class='col-md-6'>${file}</div>
+<br><br>
 			<div class="col-md-12 c">
 				<p>${bocontent}</p>
 			</div>
 		</div>
-			<div class='row'>
-				<div class="col-md-12 b">
-				좋아요 싫어요 찍을곳 조회수
+			<div class='row '>
+			<div class="col-md-3 b"></div>
+				<div class="col-md-6 b">
+				좋아요 싫어요 찍을곳 조회수 
 				</div>
+				<div class='col-md-3 b'>${update}&nbsp;&nbsp;&nbsp;&nbsp; ${delete}</div>
 				</div>
 		
 	</div>
 <div class='container'>
 <div class='row'>
-	<div class="col-md-12 b">
+	<div class="col-md-12 b"  >
 	<div class='row'>
 	
-	<div class="col-md-2 b" id='repeid'>로그인사람 계정명</div>
+	<div class="col-md-2 b" id='repeid' align="center">${repeid}</div>
 	<div class="col-md-7 b"><input type="text" class="form-control" id='reple'></div>
 	<div class="col-md-2 b" id='redate'></div>
 	<div class="col-md-1 b"><button class="btn btn-primary" onclick="replein();">버튼</button></div>
 	</div>
 ${reple}
+<div class='row' id='gon'>
+</div>
 </div>
 </div>
 </div>
@@ -164,21 +173,17 @@ function replein(){
 	 let replediv = document.getElementById("repeid");
 	 let divText = replediv.textContent;
 	 let repeid = divText;
-	 
-	 
+	 const bosequence=document.getElementById('bosequence').value;
 	 
 	 let datediv = document.getElementById("redate");
 	 let dateText = datediv.textContent;
 	 let redate = dateText;
 	
 	
-	let json = {reple:reple,repeid:repeid,redate:redate}
+	let json = {reple:reple,repeid:repeid,redate:redate,boSequence:bosequence}
 	
 	
 	
-	console.log(json);	
-	let json2= JSON.stringify(json);
- 	console.log(json2);	
 /* 	let json3= JSON.stringify(json2);
 	console.log(json3);	
 	let json4= JSON.stringify(json3);
@@ -194,22 +199,21 @@ function replein(){
 	
 	 */
 	
-	
-/* 	$.ajax({
+	$.ajax({
 		type : 'post',
-		url : './replein',
-		data : {
-			'pemail' : pemail
-		},
+		url : './repleIn',
+		 dataType : 'json',
+		data : {json:JSON.stringify(json)},
 		contentType : "application/x-www-form-urlencoded; charset=UTF-8",
 		success : function(res) {
-			alert(res);
-			duplem = 2;
+		/* 	document.getElementById('gon').innerHTML= "<div class='col-md-2 b' align='center'>"+res.repeid+
+			"</div><div class='col-md-7 b'>"+res.reple+"</div><div class='col-md-3 b'>"+res.redate+"</div>";
+		 */	location.reload();
 		}
 
 		
 		
-	}); */
+	}); 
 	
 	
 }

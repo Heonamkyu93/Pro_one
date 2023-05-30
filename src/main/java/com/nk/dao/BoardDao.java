@@ -25,7 +25,7 @@ public class BoardDao {
 	}
 
 	public BoardDao() {
-		try {
+		try  {
 			con = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "c##heo", "1111");
 
 		} catch (SQLException e) {
@@ -36,7 +36,7 @@ public class BoardDao {
 
 	public String boardInsert(BoardDto bt) {
 		String sql = "INSERT INTO PEBOARD VALUES (bonumeringseq.NEXTVAL,?,?,?,SYSDATE,?)";
-		try {
+		try  {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, bt.getBoTitle());
 			psmt.setString(2, bt.getBoContent());
@@ -62,81 +62,7 @@ public class BoardDao {
 		return "n";
 	}
 
-	public boolean boardDel() {
-		String sql = "UPDATE PEBOARD SET BOAVAILABLE = 2";
-		try {
-			psmt = con.prepareStatement(sql);
-			int re = psmt.executeUpdate();
-			if (re != 0) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (rs != null)
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			if (psmt != null)
-				try {
-					psmt.close();
-				} catch (Exception e) {
-				}
-			if (con != null)
-				try {
-					con.close();
-				} catch (Exception e) {
-				}
-		}
 
-		return false;
-	}
-
-	public void contentInside(String botitle) {
-		LinkedList<BoardDto> ll = new LinkedList<>();
-		BoardDto bDto = null;
-		String sql = "SELECT * FROM PEBOARD WHERE BOTITLE=?"; // 타이틀로 가져오면 안되고 unique나 시퀀스도 가져와서 중복된값이 없도록 처리해야한다
-		try {
-			psmt = con.prepareStatement(sql);
-			psmt.setString(1, botitle);
-			rs = psmt.executeQuery();
-			while (rs.next()) {
-				bDto = new BoardDto();
-				bDto.setBoTitle(rs.getString("botitle"));
-				bDto.setBoContent(rs.getString("bocontent"));
-				bDto.setBoSequence(rs.getString("bosequence"));
-				bDto.setBoDate(rs.getString("bodate"));
-				bDto.setPeid(rs.getString("peid"));
-				bDto.setBoAvailable(rs.getInt("boavailable"));
-				ll.add(bDto);
-			}
-			if (rs.getString("botitle") != null) {
-
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (rs != null)
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			if (psmt != null)
-				try {
-					psmt.close();
-				} catch (Exception e) {
-				}
-			if (con != null)
-				try {
-					con.close();
-				} catch (Exception e) {
-				}
-		}
-
-	}
 
 	public ArrayList<BoardDto> boardList(int start, int end) {
 		String sql = "SELECT * FROM ( SELECT ROWNUM NUM ,N. * FROM (SELECT * FROM PEBOARD ORDER BY BODATE DESC) N ) WHERE NUM BETWEEN ? AND ? AND  boavailable = 1";
@@ -202,9 +128,9 @@ public class BoardDao {
 
 	public LinkedList<BoardDto> boardInside(String bosequence) {
 		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ?";
-		
+		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE,R.reSequence FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ? ORDER BY REDATE ASC";
 		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE,C.BOHIT,C.BOLIKE,C.BODISLIKE FROM PEBOARD P ,boardcount C WHERE p.bosequence= c.bosequence AND P.BOSEQUENCE =? ";
-		String sql =  "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE,R.reSequence FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ? ORDER BY REDATE DESC"; 
+		String sql ="SELECT * FROM PEBOARD P FULL OUTER JOIN boardcount C ON p.bosequence = c.bosequence FULL OUTER JOIN  boardfile F ON p.bosequence = f.bosequence FULL OUTER JOIN boardreple r ON p.bosequence = r.bosequence where P.BOSEQUENCE =? ORDER BY REDATE ASC"; 
 		LinkedList<BoardDto> ll = new LinkedList<>();																															 
 		BoardDto bDto;
 		try {
@@ -241,6 +167,22 @@ public class BoardDao {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
 		}
 		return null;
 
@@ -291,6 +233,54 @@ public class BoardDao {
 				bDto.setBoFileSer(rs.getString("BOFILESER"));
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean repleIn(BoardDto bDto) {
+		String sql = "INSERT INTO BOARDREPLE VALUES(?,?,?,sysdate,borepleseq.nextval)";
+		try {
+			psmt= con.prepareStatement(sql);
+			psmt.setString(1,bDto.getBoSequence());
+			psmt.setString(2,bDto.getRepeid());
+			psmt.setString(3,bDto.getReple());
+			int re=psmt.executeUpdate();
+			if(re!=0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			if (psmt != null)
+				try {
+					psmt.close();
+				} catch (Exception e) {
+				}
+			if (con != null)
+				try {
+					con.close();
+				} catch (Exception e) {
+				}
+		}
+		return false;
+	}
+
+	public void boardUpdateForm(String peid, String bosequence) {
+		String sql = "SELECT * FROM PEBOARD WHERE PEID=? AND BOSEQUENCE = ?";
+		try(PreparedStatement psmt=con.prepareStatement(sql);) {
+			psmt.setString(1, peid);
+			psmt.setString(2, bosequence);
+			int re=psmt.executeUpdate();
+			if(re!=0) {
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

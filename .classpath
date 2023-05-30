@@ -13,10 +13,12 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/activation.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/cos.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/javax.mail-1.6.2.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/lombok.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/ojdbc11.jar"/>
+	<classpathentry kind="lib" path="C:/tomcat/ja/activation.jar"/>
+	<classpathentry kind="lib" path="C:/tomcat/ja/commons-fileupload-1.2.2.jar"/>
+	<classpathentry kind="lib" path="C:/tomcat/ja/commons-io-2.11.0.jar"/>
+	<classpathentry kind="lib" path="C:/tomcat/ja/cos.jar"/>
+	<classpathentry kind="lib" path="C:/tomcat/ja/javax.mail-1.6.2.jar"/>
+	<classpathentry kind="lib" path="C:/tomcat/ja/ojdbc11.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gson-2.10.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

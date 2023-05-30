@@ -2,6 +2,7 @@ package com.nk.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -12,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.gson.Gson;
 import com.nk.dao.BoardDao;
-import com.nk.dao.MemberDao;
 import com.nk.dto.BoardDto;
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
@@ -32,7 +33,6 @@ public class BoardManager {
 		BoardDto bt = new BoardDto();
 		BoardDto bt2;
 		String upPath = request.getSession().getServletContext().getRealPath("upload");
-		System.out.println(upPath);
 		int size = 10 * 1024 * 1024;
 		// PEBOARD 테이블에 넣을값
 		File f = new File(upPath);
@@ -59,8 +59,6 @@ public class BoardManager {
 					if (boFileOri == null)
 						continue; // 파일 1,3번째는 업로드하고 2번째를 건너뛸경우
 
-					System.out.println("오리지날파일이름" + boFileOri);
-					System.out.println("서버파일이름" + boFileSer);
 
 					bt2 = new BoardDto();
 					// BOARDFILE 테이블에넣을값 //시퀀스값을 구해와야함
@@ -68,8 +66,8 @@ public class BoardManager {
 					bt2.setBoFileSer(boFileSer);
 					bt2.setBoFileOri(boFileOri);
 					ba.fileInset(bt2);
-
 				}
+				return "jump.jsp";
 			}
 
 		} catch (IOException e) {
@@ -79,19 +77,7 @@ public class BoardManager {
 		return null;
 	}
 
-	public String boardDel() {
-		BoardDao ba = new BoardDao();
-		ba.boardDel();
 
-		return null;
-	}
-
-	public void contentInside() {
-		BoardDao bDao = new BoardDao();
-		String botitle = request.getParameter("botitle");
-		bDao.contentInside(botitle);
-
-	}
 
 	public String boardList() {
 		BoardDao bDao = new BoardDao();
@@ -224,30 +210,33 @@ public class BoardManager {
 		return "index.jsp?nav=logoutheader.jsp";
 	}
 
-	public String filetest() {
-		return null;
-	}
 
 	public String boardInside() { // 조회수, 파일 , 댓글 다 불러와야함
 		String bosequence = request.getParameter("bosequence");
 		BoardDao bDao = new BoardDao();
 		LinkedList<BoardDto> ll = bDao.boardInside(bosequence);
-//		LinkedList<BoardDto> llRple = bDao.boardGetReple(bosequence);
-//		LinkedList<BoardDto> llFile = bDao.boardGetFile(bosequence);
+		HttpSession session = request.getSession();
+		
 		if (ll.get(0).getBoTitle() != null) {
+			if(session.getAttribute("peid").equals(ll.get(0).getPeid())) {
+				request.setAttribute("update","<a href='./boardUpdateForm?bosequence="+ll.get(0).getBoSequence()+"&peid="+ll.get(0).getPeid()+"'><button type='button' class='btn btn-primary'>수정</button></a>");
+				request.setAttribute("delete","<a href='./boarDelete?bosequence="+ll.get(0).getBoSequence()+"&peid="+ll.get(0).getPeid()+"'><button type='button' class='btn btn-primary'>삭제</button></a>");
+			}
+			request.setAttribute("repeid",session.getAttribute("peid"));
 			request.setAttribute("peid", ll.get(0).getPeid());
 			request.setAttribute("botitle", ll.get(0).getBoTitle());
 			request.setAttribute("bocontent", ll.get(0).getBoContent());
 			request.setAttribute("botitle", ll.get(0).getBoTitle());
 			request.setAttribute("bodate", ll.get(0).getBoDate());
 			request.setAttribute("bosequence", ll.get(0).getBoSequence());
-			String reple = makeHtmlReple(ll);
-			request.setAttribute("reple", reple);
 			if (ll.get(0).getReSequence() != null) { // 리플시퀀스가 널이아니면 댓글가져오기
-			//	bDao.getReple(bosequence);
+				String reple = makeHtmlReple(ll);
+				request.setAttribute("reple", reple);
+				
 			}
 			if (ll.get(0).getBoFileOri() != null) { // 파일도 마찬가지
-				bDao.getFile(bosequence);
+				
+				request.setAttribute("file",fileDownload(ll)); 
 			}
 
 			return "boardInside.jsp";
@@ -258,84 +247,96 @@ public class BoardManager {
 
 	}
 
+	public String fileDownload(LinkedList<BoardDto> ll)  {
+		StringBuilder sb = new StringBuilder();	
+		LinkedHashSet<String> fileLhs = new LinkedHashSet<>();
+		for(int i =0 ;i<ll.size();i++) {
+			String file = ll.get(i).getBoFileOri()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getBoFileSer();
+			fileLhs.add(file);
+		}
+		Iterator <String> iter = fileLhs.iterator();
+		while(iter.hasNext()) {
+			String removeDuple = iter.next();
+			String k[]=removeDuple.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",2);
+			sb.append("<a download href='"+"\\Pro_one\\upload" + "\\"+k[0]+"'>");
+			sb.append(k[1]);
+			sb.append("</a>");
+			sb.append("&nbsp;");
+			sb.append("&nbsp;");
+			sb.append("&nbsp;");
+			sb.append("&nbsp;");
+			sb.append("&nbsp;");
+			
+			
+		}
+		return sb.toString();
+		
+	}
+
 	private String makeHtmlReple(LinkedList<BoardDto> ll) {			//댓글이 여러개일수도 있고 없을수도있음 댓글이 한개여도 파일이 여러개면 여러개가 담김   파일도 마찬가지  
 		StringBuilder sb = new StringBuilder();
 		LinkedHashSet<String> lhs = new LinkedHashSet<>();
 		for(int i=0;i<ll.size();i++) {
-			String reple=ll.get(i).getRepeid() + "ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getReple()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getRedate()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getReSequence();
+			String reple=ll.get(i).getRepeid() + "ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getReple()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getRedate();
 			lhs.add(reple);
 		}
-		String d ="";
-		d.split(d, 0);
-		BoardDto[] repleinfo = new BoardDto[lhs.size()];
 		Iterator <String> iter = lhs.iterator();
-		String re[] = new String[lhs.size()];
-		
-		/* for(int i=0;i<lhs.size();i++) {
-			 String rePlus=iter.next(); 
-			 String k[]=rePlus.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",4);
-			 System.out.print(k[0]+",");
-			 System.out.print(k[1]+",");
-			 System.out.print(k[2]+",");
-			 System.out.print(k[3]+",");
-			 System.out.println();
-		 
-		 }*/
-		
-		
-			
 			 while(iter.hasNext()) { 
 				 String rePlus=iter.next(); 
-			 String k[]=rePlus.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",4);
-			 System.out.print(k[0]+",");
-			 System.out.print(k[1]+",");
-			 System.out.print(k[2]+",");
-			 System.out.print(k[3]+",");
-			 System.out.println();
-		  
-			 
-			 
-			 
-			 
+			 String k[]=rePlus.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",3);
+			 sb.append("<div class='row'>");
+			 sb.append("<div class='col-md-2 b' align='center'>");
+			 sb.append(k[0]);
+			 sb.append("</div>");
+			 sb.append("<div class='col-md-7 b'>");
+			 sb.append(k[1]);
+			 sb.append("</div>");
+			 sb.append("<div class='col-md-3 b'>");
+			 sb.append(k[2]);
+			 sb.append("</div>");
+			 sb.append("</div>");
 			 }
-				
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		//if(ll.get(i).getReSequence().equals(ll.get(j).getReSequence())) {
-		
-		
-		
-		
-		/*
-		 * for(int i=0,j=1;i<=ll.size();i++,j++) { //댓글은 댓글 시퀀스가 같으면 컨티뉴주고 파일은 3개를 묶어서
-		 * 묶은게 같으면 컨티뉴 if(!ll.get(j).getReSequence().equals(ll.get(i).getReSequence()))
-		 * { ll.remove(j); } if(ll.size()==1) { sb.append(ll.get(i).getRepeid());
-		 * sb.append(ll.get(i).getReple()); sb.append(ll.get(i).getRedate()); break; }
-		 * if(j==ll.size()) {break;}
-		 * if(!ll.get(j).getReSequence().equals(ll.get(i).getReSequence())) {
-		 * sb.append("<div class='row'>"); sb.append("<div class='col-md-12 b'>");
-		 * sb.append(ll.get(i).getRepeid()); sb.append(ll.get(i).getReple());
-		 * sb.append(ll.get(i).getRedate()); sb.append(ll.get(i).getReSequence());
-		 * sb.append("</div>"); sb.append("</div>"); } } sb.append("<div class='row'>");
-		 * sb.append("<div class='col-md-12 b'>");
-		 * sb.append(ll.get(ll.size()-1).getRepeid());
-		 * sb.append(ll.get(ll.size()-1).getReple());
-		 * sb.append(ll.get(ll.size()-1).getRedate()); sb.append("</div>");
-		 * sb.append("</div>");
-		 */
 		return sb.toString();
+	}
+
+	public String repleIn() {
+		String json=request.getParameter("json");
+	//	JsonObject jobj = (JsonObject) JsonParser.parseString(json);
+		Gson gson = new Gson();
+		BoardDto bDto = gson.fromJson(json, BoardDto.class);	// repedi , reple , boSequence , redate를 가져왔음
+		BoardDao bDao = new BoardDao();
+		boolean re=bDao.repleIn(bDto);	
+		try(PrintWriter pw = response.getWriter();) {
+			if(re) {
+				pw.print(json);
+			}else {
+				pw.print("실패");
+			}
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String boardUpdateForm() {
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp?nav=logoutheader.jsp";
+		} else if (loginch.equals("login")) {
+			String peid=request.getParameter("peid");
+			String bosequence=request.getParameter("bosequence");
+			BoardDao bDao = new BoardDao();
+			bDao.boardUpdateForm(peid,bosequence);
+			
+			
+			return "boardUpdateForm.jsp";
+		}
+		
+		
+		
+		request.getParameter("bosequence");
+		return null;
 	}
 
 }
