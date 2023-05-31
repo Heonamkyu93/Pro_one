@@ -13,12 +13,8 @@
 	
 </head>
 <body>
-<script type="text/javascript">
-urlSearch = new URLSearchParams(location.search);
-const nav = urlSearch.get('nav');
-<%String navi=request.getParameter("nav");%>
-</script>	
-<jsp:include page="<%=navi%>"></jsp:include>
+
+<jsp:include page="${param.nav}"></jsp:include>
 
 
 <jsp:include page="footer.jsp"></jsp:include>

@@ -36,6 +36,8 @@ i {
 	rel="stylesheet"
 	integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
 	crossorigin="anonymous">
+	<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <body>
 	<jsp:include page="loginheader.jsp"></jsp:include>
 
@@ -43,7 +45,8 @@ i {
 		<div class="row">
 			<div class="col-md-12" align="center" >글쓰기</div>
 		</div>
-		<form action="./boardInsert" method="post"  enctype="multipart/form-data" onsubmit='return vali();'>
+		<form action="./boardUpdate" method="post"  enctype="multipart/form-data" onsubmit='return vali();'>
+		<input type="hidden" value="${bosequence}" name='bosequence' > 
 			<div class="row">
 				<div class="col-md-2 b">작성자</div>
 				<div class="col-md-4 b">
@@ -52,21 +55,24 @@ i {
 				</div>
 				<div class="col-md-2 b">작성일</div>
 				<div class="col-md-4 b">
-					<input type="text" readonly="readonly" value="###"
+					<input type="text" readonly="readonly" value='${bodate}'
 						class="form-control" id='bodate' name='bodate'>
 				</div>
 					
 				<div class='row'>
 				
 				<div class="col-md-10" >
-					<input type="file" name='bofile1' id='bofile1'  style="margin: 15px"><button type="button" class="btn btn-danger"onclick="upcancle(1);">취소</button>
-					<input type="file" name='bofile2' id='bofile2'  style="margin: 15px"><button type="button" class="btn btn-danger"onclick="upcancle(2);">취소</button>
-					<input type="file" name='bofile3' id='bofile3'  style="margin: 15px"> <button type="button" class="btn btn-danger"onclick="upcancle(3);">취소</button>
+					<input type="file" name='bofile1' id='bofile1'  style="margin: 15px" onchange="prefileremove1();"><button type="button" class="btn btn-danger"onclick="upcancle(1);" >취소</button>
+					<input type="file" name='bofile2' id='bofile2'  style="margin: 15px" onchange="prefileremove2();"><button type="button" class="btn btn-danger"onclick="upcancle(2);">취소</button>
+					<input type="file" name='bofile3' id='bofile3'  style="margin: 15px" onchange="prefileremove3();"> <button type="button" class="btn btn-danger"onclick="upcancle(3);" >취소</button>
 					</div>
 						
 					<div class="col-md-2">
-										<i>파일용량은 10mb가 최대입니다.</i> 	</div></div>
-				
+										<i>파일용량은 10mb가 최대입니다.</i><br></div></div>
+						<div class='row'>${file} <i>파일을 새로 올리면 기존의 파일은 삭제됩니다</i>
+						</div>			<div class="col-md-4"><button type="button" class="btn btn-danger"onclick="prefileremove1();" >삭제</button></div>
+						<div class="col-md-4"><button type="button" class="btn btn-danger"onclick="prefileremove2();" >삭제</button></div>
+						<div class="col-md-4"><button type="button" class="btn btn-danger"onclick="prefileremove3();" >삭제</button></div>					
 			</div>
 			<div class="row">
 				<div class="col-md-1" align='center'>제목</div>
@@ -79,9 +85,11 @@ i {
 
 				<div class="col-md-12">
 					<input type="text" class="form-control" placeholder="제목을 입력하세요.50자"
-						id='botitle' name='botitle' onkeyup="title_count();">
+						id='botitle' name='botitle' onkeyup="title_count();" value="${botitle}">
 				</div>
 			</div>
+			
+			
 			<div class="row">
 				<div class="col-md-1" align='center'>내용</div>
 				<div class="col-md-10"></div>
@@ -93,8 +101,8 @@ i {
 
 				<div class="col-md-12">
 					<textarea class="form-control" rows="15" cols="1000"
-						maxlength="3990" placeholder="내용을 입력하세요. 글자수제한 3990"
-						id='bocontent' name='bocontent' onkeyup="cont_count();"></textarea>
+						maxlength="3990" placeholder="내용을 입력하세요. 글자수제한 3990" 
+						id='bocontent' name='bocontent' onkeyup="cont_count();">${bocontent}</textarea>
 				</div>
 			</div>
 			<div class="row">
@@ -109,12 +117,42 @@ i {
 	<jsp:include page="footer.jsp"></jsp:include>
 
 	<script>
+	
+	function prefileremove1(){
+		let fi=document.getElementById('prediv1');
+		let fi2=document.getElementById('prefilenum1');
+		fi.innerText='';
+		fi2.value=fi2.value+"/delete";
+	}
+	function prefileremove2(){
+		let fi=document.getElementById('prediv2');
+		let fi2=document.getElementById('prefilenum2');
+		fi.innerText='';
+		fi2.value=fi2.value+"/delete";
+	}
+
+	function prefileremove3(){
+		let fi=document.getElementById('prediv3');
+		let fi2=document.getElementById('prefilenum3');
+		fi.innerText='';
+		fi2.value=fi2.value+"/delete";
+	}
+
+	
+	function pre(file){
+		   text = $(file).text()
+	}
+	
+	
 	function back(){
 		location.href="./boardList"
 	}
 		function upcancle(a){
 	
-		if(a===1){document.getElementById('bofile1').value ='';}
+		if(a===1){document.getElementById('bofile1').value ='';
+		
+		
+		}
 		else if (a===2){
 			document.getElementById('bofile2').value='';	
 		}else if (a===3){

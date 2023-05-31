@@ -3,6 +3,7 @@ package com.nk.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -29,10 +30,16 @@ public class BoardManager {
 	}
 
 	public String boardInsert() {
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp";
+		} else if (loginch.equals("login")) {
+		
 		BoardDao ba = new BoardDao();
 		BoardDto bt = new BoardDto();
 		BoardDto bt2;
-		String upPath = request.getSession().getServletContext().getRealPath("upload");
+	//	String upPath = request.getSession().getServletContext().getRealPath("upload");
+		String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
 		int size = 10 * 1024 * 1024;
 		// PEBOARD 테이블에 넣을값
 		File f = new File(upPath);
@@ -67,19 +74,24 @@ public class BoardManager {
 					bt2.setBoFileOri(boFileOri);
 					ba.fileInset(bt2);
 				}
-				return "jump.jsp";
-			}
+				ba.cloe();
+				return "jump.jsp";}
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
+	}
 		return null;
 	}
 
-
-
 	public String boardList() {
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp";
+		} else if (loginch.equals("login")) {
+		
+		
 		BoardDao bDao = new BoardDao();
 		int cur = 1;
 		int listco = 1;
@@ -97,6 +109,8 @@ public class BoardManager {
 		String html = makeHtmlList(al);
 		request.setAttribute("html", html);
 		request.setAttribute("page", page);
+		
+	}
 		return "boardlist.jsp";
 	}
 
@@ -201,17 +215,17 @@ public class BoardManager {
 		HttpSession session = request.getSession();
 		String loginch = loginCookie();
 		if (loginch.equals("logout")) {
-			return "loginForm.jsp?nav=logoutheader.jsp";
+			return "loginForm.jsp";
 		} else if (loginch.equals("login")) {
 			String peid = (String) session.getAttribute("peid");
 			request.setAttribute("peid", peid);
 			return "boardInsert.jsp";
 		}
-		return "index.jsp?nav=logoutheader.jsp";
+		return "loginForm.jsp";
 	}
 
 
-	public String boardInside() { // 조회수, 파일 , 댓글 다 불러와야함
+	public String boardInside() throws UnsupportedEncodingException { // 조회수, 파일 , 댓글 다 불러와야함
 		String bosequence = request.getParameter("bosequence");
 		BoardDao bDao = new BoardDao();
 		LinkedList<BoardDto> ll = bDao.boardInside(bosequence);
@@ -219,6 +233,7 @@ public class BoardManager {
 		
 		if (ll.get(0).getBoTitle() != null) {
 			if(session.getAttribute("peid").equals(ll.get(0).getPeid())) {
+				request.setCharacterEncoding("utf-8");
 				request.setAttribute("update","<a href='./boardUpdateForm?bosequence="+ll.get(0).getBoSequence()+"&peid="+ll.get(0).getPeid()+"'><button type='button' class='btn btn-primary'>수정</button></a>");
 				request.setAttribute("delete","<a href='./boarDelete?bosequence="+ll.get(0).getBoSequence()+"&peid="+ll.get(0).getPeid()+"'><button type='button' class='btn btn-primary'>삭제</button></a>");
 			}
@@ -251,22 +266,22 @@ public class BoardManager {
 		StringBuilder sb = new StringBuilder();	
 		LinkedHashSet<String> fileLhs = new LinkedHashSet<>();
 		for(int i =0 ;i<ll.size();i++) {
-			String file = ll.get(i).getBoFileOri()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getBoFileSer();
+			String file = ll.get(i).getBoFileOri()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getBoFileSer()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getFileseq();
 			fileLhs.add(file);
 		}
 		Iterator <String> iter = fileLhs.iterator();
+		int i = 1;
 		while(iter.hasNext()) {
-			String removeDuple = iter.next();
-			String k[]=removeDuple.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",2);
-			sb.append("<a download href='"+"\\Pro_one\\upload" + "\\"+k[0]+"'>");
-			sb.append(k[1]);
-			sb.append("</a>");
-			sb.append("&nbsp;");
-			sb.append("&nbsp;");
-			sb.append("&nbsp;");
-			sb.append("&nbsp;");
-			sb.append("&nbsp;");
 			
+			String removeDuple = iter.next();
+			String k[]=removeDuple.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",3);
+			sb.append("<div class='col-md-4' id='prediv"+i+"'>");
+			sb.append("<a download href='"+"\\Pro_one\\upload" + "\\"+k[1]+"' id='prefile"+i+"' onclick='pre(this);'>");
+			sb.append(k[0]);
+			sb.append("</a>");
+			sb.append("</div>");
+			sb.append("<input type='hidden' value='"+k[2]+"'id='prefilenum"+i+"'name='prefilenum"+i+"'>");
+			i++;
 			
 		}
 		return sb.toString();
@@ -277,24 +292,34 @@ public class BoardManager {
 		StringBuilder sb = new StringBuilder();
 		LinkedHashSet<String> lhs = new LinkedHashSet<>();
 		for(int i=0;i<ll.size();i++) {
-			String reple=ll.get(i).getRepeid() + "ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getReple()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getRedate();
+			String reple=ll.get(i).getRepeid() + "ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getReple()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getRedate()+"ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺"+ll.get(i).getReSequence();
 			lhs.add(reple);
 		}
+		HttpSession session = request.getSession();
+		String peid=(String)session.getAttribute("peid");
 		Iterator <String> iter = lhs.iterator();
 			 while(iter.hasNext()) { 
 				 String rePlus=iter.next(); 
-			 String k[]=rePlus.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",3);
+			 String k[]=rePlus.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",4);
 			 sb.append("<div class='row'>");
-			 sb.append("<div class='col-md-2 b' align='center'>");
+			 sb.append("<div class='col-md-2 b' align='center' id='againrepeid"+k[3]+"'>");
 			 sb.append(k[0]);
 			 sb.append("</div>");
-			 sb.append("<div class='col-md-7 b'>");
+			 sb.append("<div class='col-md-7 b' id='apple"+k[3]+"'>");
 			 sb.append(k[1]);
 			 sb.append("</div>");
-			 sb.append("<div class='col-md-3 b'>");
+			 sb.append("<div class='col-md-2 b'>");
 			 sb.append(k[2]);
 			 sb.append("</div>");
+			 sb.append("<div class='col-md-1 b'>");
+			 if(peid.equals(k[0])) {
+				 sb.append("<button type='button' class='btn btn-primary btn-sm' onclick='repledelete();'>삭제</button>");  //삭제 수정은둘다 ajax
+				 sb.append("<button type='button' class='btn btn-default btn-sm' onclick='writeagain("+k[3]+");'>수정</button>");
+				 sb.append("<button type='button' class='btn btn-default btn-sm' onclick='rewrite("+k[3]+");'>등록</button>");
+			 }
 			 sb.append("</div>");
+			 sb.append("</div>");
+			 
 			 }
 		return sb.toString();
 	}
@@ -322,21 +347,116 @@ public class BoardManager {
 	public String boardUpdateForm() {
 		String loginch = loginCookie();
 		if (loginch.equals("logout")) {
-			return "loginForm.jsp?nav=logoutheader.jsp";
+			return "loginForm.jsp";
 		} else if (loginch.equals("login")) {
 			String peid=request.getParameter("peid");
 			String bosequence=request.getParameter("bosequence");
 			BoardDao bDao = new BoardDao();
-			bDao.boardUpdateForm(peid,bosequence);
-			
-			
+	LinkedList<BoardDto> ll = bDao.boardUpdateForm(peid,bosequence);
+			if(ll.get(0).getPeid()!=null) {
+				request.setAttribute("peid",ll.get(0).getPeid());
+				request.setAttribute("botitle",ll.get(0).getBoTitle());
+				request.setAttribute("bocontent",ll.get(0).getBoContent());
+				request.setAttribute("bodate", ll.get(0).getBoDate());
+				request.setAttribute("bosequence", ll.get(0).getBoSequence());
+				if(ll.get(0).getBoFileOri()!=null) {
+					request.setAttribute("file",fileDownload(ll)); 	
+				}
+			}
 			return "boardUpdateForm.jsp";
 		}
-		
-		
-		
-		request.getParameter("bosequence");
-		return null;
+		return "loginForm.jsp";
 	}
 
+	public String boardUpdate() {		// 오라클merge문을 사용해서 update 없으면 insert   제거할파일을 업데이트 없으면 인서트니깐 새로운 파일처리도 한번에 가능할듯 
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp";
+		} else if (loginch.equals("login")) {
+			//String upPath = request.getSession().getServletContext().getRealPath("upload");
+			String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+			int size = 10 * 1024 * 1024;
+			// PEBOARD 테이블에 넣을값
+			File f = new File(upPath);
+			if (!f.isDirectory()) {
+				System.out.println("폴더없음");
+				f.mkdir();
+			}
+			BoardDto bDto = new BoardDto();
+			BoardDao bDao = new BoardDao();
+			try {
+				MultipartRequest multi = new MultipartRequest(request, upPath, size, "utf-8",
+						new DefaultFileRenamePolicy());
+				Enumeration files = multi.getFileNames(); // 배열
+				String bosequence=multi.getParameter("bosequence");
+				String file1=multi.getParameter("prefilenum1");			
+				fileDeleteCheck(file1,bosequence);
+				String file2=multi.getParameter("prefilenum2");			
+				fileDeleteCheck(file2,bosequence);
+				String file3=multi.getParameter("prefilenum3");			
+				fileDeleteCheck(file3,bosequence);
+				
+				
+				bDto.setBoSequence(bosequence);
+				bDto.setBoTitle(multi.getParameter("botitle"));
+				bDto.setBoContent(multi.getParameter("bocontent"));
+				bDto.setPeid(multi.getParameter("peid"));
+				bDto.setBoDate(multi.getParameter("bodate"));
+				bDto.setBoAvailable(1);
+				
+				bDao.boardUpdate(bDto);
+				
+				
+				while (files.hasMoreElements()) {
+					String file = (String) files.nextElement();
+					String boFileSer = multi.getFilesystemName(file); // 서버파일이름
+					String boFileOri = multi.getOriginalFileName(file); // 오리지날이름
+					if (boFileOri == null)
+						continue; // 파일 1,3번째는 업로드하고 2번째를 건너뛸경우
+
+
+					bDto = new BoardDto();
+					// BOARDFILE 테이블에넣을값 //시퀀스값을 구해와야함
+					bDto.setBoSequence(bosequence);
+					bDto.setBoFileSer(boFileSer);
+					bDto.setBoFileOri(boFileOri);
+					bDao.fileInset(bDto);
+				}
+				
+				bDao.cloe(); 
+				}
+				
+			catch (Exception e) {
+			}
+			
+	}
+		return "jump.jsp";
+	}
+	private String fileDeleteCheck(String file1, String bosequence) {    //delete 붙은 파일을 dao가서 select로 정보 가져오고 그걸로 실제 파일삭제하고나서 디비에 저장된값을 지우자
+		String fileIndex;
+		if(file1.contains("delete")) {
+			
+			String[] deleteOriginal = file1.split("/", 2);
+			fileIndex=deleteOriginal[0];
+			BoardDao bDao = new BoardDao();
+			BoardDto bDto = new BoardDto();
+			
+			bDto=bDao.findFile(fileIndex);
+			
+			if(bosequence.equals(bDto.getBoSequence())) bDao.deleteFile(bDto);
+			String serverName=bDto.getBoFileSer();
+			//String upPath = request.getSession().getServletContext().getRealPath("upload")+"//";
+			String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload\\";
+			upPath+=serverName;
+			System.out.println(upPath);
+			File f= new File(upPath);
+			if(f.exists()) {f.delete();}else {
+				return null;
+			}
+			
+		
+	}
+
+		return null;
+}
 }

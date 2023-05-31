@@ -83,7 +83,7 @@ border: 1px solid #E6E6E6;
 		<div class='row'>
 			제목 <br><br>
 			<div class="col-md-12 b">
-					v${botitle }
+					${botitle }
 			</div>
 		</div>
 		<input type="hidden" value=${bosequence} id='bosequence'>
@@ -91,7 +91,8 @@ border: 1px solid #E6E6E6;
 
 	<div class='col-md-2'>내용</div>
 	<div class='col-md-4'></div>
-	<div class='col-md-6'>${file}</div>
+	<div class='col-md-6'></div>
+		<div class='row'>${file}</div>	
 <br><br>
 			<div class="col-md-12 c">
 				<p>${bocontent}</p>
@@ -124,7 +125,45 @@ ${reple}
 </div>
 
 <script>
+function writeagain(reseq){
+	const replediv=document.getElementById('apple'+reseq);
+	let divText = replediv.textContent;
+    let reple = divText;
+	replediv.innerHTML="<input type='text' name='rewrite'id='rewrite' maxlength='490' class='form-control' value='"+reple+"'>";
+		
+}
+function rewrite(reseq){
+	let rewrite = document.getElementById('rewrite');
+	alert(rewrite.value);
+	let rewritepeid = document.getElementById('againrepeid');
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$.ajax({
+		type : 'post',
+		url : './rewrite',
+		 dataType : 'json',
+		data : {json:JSON.stringify(json)},
+		contentType : "application/x-www-form-urlencoded; charset=UTF-8",
+		success : function(res) {
+		/* 	document.getElementById('gon').innerHTML= "<div class='col-md-2 b' align='center'>"+res.repeid+
+			"</div><div class='col-md-7 b'>"+res.reple+"</div><div class='col-md-3 b'>"+res.redate+"</div>";
+		 */	location.reload();
+		}
 
+		
+		
+	}); 
+
+}
 window.onload = function() {
 	time();
 }
@@ -145,7 +184,6 @@ function time() {
 
 	var timeString = hours + ':' + minutes + ':' + seconds;
 	var now = dateString + ' ' + timeString;
-	document.getElementById('bodate').value = now;
 	
 	
 	

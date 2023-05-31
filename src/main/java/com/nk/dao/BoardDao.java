@@ -110,7 +110,7 @@ public class BoardDao {
 	}
 
 	public void fileInset(BoardDto bt2) {
-		String sql = "INSERT INTO BOARDFILE VALUES(?,?,?)";
+		String sql = "INSERT INTO BOARDFILE VALUES(?,?,?,bofileseq.nextval)";
 		try {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, bt2.getBoSequence());
@@ -149,11 +149,11 @@ public class BoardDao {
 				}
 				bDto.setBoFileOri(rs.getString("BOFILEORI"));
 				bDto.setBoFileSer(rs.getString("BOFILESER"));
+				bDto.setFileseq(rs.getString("fileseq"));
 				bDto.setBoHit(rs.getInt("BOHIT"));
 				bDto.setBoLike(rs.getInt("BOLIKE"));
 				bDto.setBodisLike(rs.getInt("BODISLIKE"));
 				bDto.setReSequence(rs.getString("reSequence"));
-
 				bDto.setRepeid(rs.getString("REPEID"));
 				bDto.setReple(rs.getString("REPLE"));
 				bDto.setRedate(rs.getString("REDATE"));
@@ -219,24 +219,7 @@ public class BoardDao {
 	 * 
 	 * }
 	 */
-	public void getFile(String bosequence) {			//맵이나 
-		String sql="select * from boardfile where bosequence=?";
-		
-		BoardDto bDto;
-		try {
-			psmt=con.prepareStatement(sql);
-			psmt.setString(1, bosequence);
-			rs=psmt.executeQuery();
-			while(rs.next()) {
-				bDto = new BoardDto();
-				bDto.setBoFileOri(rs.getString("BOFILEORI"));
-				bDto.setBoFileSer(rs.getString("BOFILESER"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
+	
 	public boolean repleIn(BoardDto bDto) {
 		String sql = "INSERT INTO BOARDREPLE VALUES(?,?,?,sysdate,borepleseq.nextval)";
 		try {
@@ -270,18 +253,98 @@ public class BoardDao {
 		return false;
 	}
 
-	public void boardUpdateForm(String peid, String bosequence) {
-		String sql = "SELECT * FROM PEBOARD WHERE PEID=? AND BOSEQUENCE = ?";
+	public LinkedList<BoardDto> boardUpdateForm(String peid, String bosequence) {
+		String sql = "SELECT * FROM PEBOARD P FULL OUTER JOIN boardfile F ON p.bosequence = f.bosequence WHERE P.PEID=? AND P.BOSEQUENCE=? AND boavailable = 1";
 		try(PreparedStatement psmt=con.prepareStatement(sql);) {
 			psmt.setString(1, peid);
 			psmt.setString(2, bosequence);
-			int re=psmt.executeUpdate();
-			if(re!=0) {
-				
+			rs=psmt.executeQuery();
+			BoardDto bDto;
+			LinkedList<BoardDto> ll = new LinkedList<>();
+			while(rs.next()) {
+				 bDto = new BoardDto();
+				bDto.setBoSequence(rs.getString("bosequence"));
+			bDto.setBoTitle(rs.getString("botitle"));
+			bDto.setBoContent(rs.getString("bocontent"));
+			bDto.setPeid(rs.getString("peid"));
+			bDto.setBoDate(rs.getString("bodate"));
+			bDto.setBoAvailable(rs.getInt("boavailable"));
+			if(rs.getString("bofileori")!=null) {
+				bDto.setBoFileOri(rs.getString("bofileori"));
+				bDto.setBoFileSer(rs.getString("bofileser"));
+				bDto.setFileseq(rs.getString("fileseq"));
 			}
+			ll.add(bDto);
+			}
+			return ll;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
+		
+	}
+
+	public BoardDto findFile(String fileIndex) {
+		String sql= "select * from boardfile where fileseq=?";
+		BoardDto bDto = new BoardDto();
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, fileIndex);
+			rs=psmt.executeQuery();
+			while(rs.next()) {
+				bDto.setBoFileOri(rs.getString("bofileori"));
+				bDto.setBoFileSer(rs.getString("bofileser"));
+				bDto.setFileseq(rs.getString("fileseq"));
+				bDto.setBoSequence(rs.getString("bosequence"));
+			}
+			return bDto;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return null;
+	}
+
+	public void deleteFile(BoardDto bDto) {
+		String sql = "delete from boardfile where fileseq=? and bofileori=?";
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, bDto.getFileseq());
+			psmt.setString(2, bDto.getBoFileOri());
+			System.out.println(bDto.getBoFileOri());
+			System.out.println(bDto.getBoFileSer());
+			System.out.println(bDto.getFileseq());
+			int re=psmt.executeUpdate();
+		if(re!=0) {
+			System.out.println("삭제처리");
+		}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void boardUpdate(BoardDto bDto) {
+		String sql ="UPDATE PEBOARD SET BOTITLE=?,BOCONTENT=?,BODATE=SYSDATE,BoAvailable=? WHERE PEID=? AND BOSEQUENCE=? ";
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, bDto.getBoTitle());
+			psmt.setString(2, bDto.getBoContent());
+			psmt.setInt(3, bDto.getBoAvailable());
+			psmt.setString(4, bDto.getPeid());
+			psmt.setString(5, bDto.getBoSequence());
+			int re= psmt.executeUpdate();
+			if (re!=0) {
+				System.out.println("업데이트");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+	
+	
+	
+	
 	}
 }

@@ -92,7 +92,7 @@ i {
 			<div class='row'>
 
 				<div class="col-md-12">
-					<textarea class="form-control" rows="15" cols="1000"
+					<textarea class="form-control" rows="15" cols="1000" wrap="hard"
 						maxlength="3990" placeholder="내용을 입력하세요. 글자수제한 3990"
 						id='bocontent' name='bocontent' onkeyup="cont_count();"></textarea>
 				</div>

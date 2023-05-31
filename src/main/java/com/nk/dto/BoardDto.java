@@ -17,8 +17,21 @@ public class BoardDto {
 	private String reple;
 	private String redate;
 	private String reSequence;
+	private String fileseq;
 	
 	
+	
+	
+	
+	
+	public String getFileseq() {
+		return fileseq;
+	}
+
+	public void setFileseq(String fileseq) {
+		this.fileseq = fileseq;
+	}
+
 	public String getRepeid() {
 		return repeid;
 	}

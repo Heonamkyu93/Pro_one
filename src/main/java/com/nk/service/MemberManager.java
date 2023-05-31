@@ -409,6 +409,7 @@ public class MemberManager {
 		String status=loginCookie();
 		if(status.equals("login")) {
 			HttpSession session=request.getSession();
+			
 			return "index.jsp?nav=loginheader.jsp" ;}
 		else {
 			return "index.jsp?nav=logoutheader.jsp";
