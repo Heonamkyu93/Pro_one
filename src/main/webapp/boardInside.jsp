@@ -125,31 +125,55 @@ ${reple}
 </div>
 
 <script>
+function repledelete(reseq){
+	
+	$.ajax({
+		type:"post",
+		url:"./repledelete",
+		data:{resequence:reseq},
+		contentType : "application/x-www-form-urlencoded; charset=UTF-8",
+		success : function(res) {
+			location.reload();
+		}
+	});
+}
+
+
+var wa=1;
 function writeagain(reseq){
+	
+	if(wa===1){
 	const replediv=document.getElementById('apple'+reseq);
 	let divText = replediv.textContent;
     let reple = divText;
 	replediv.innerHTML="<input type='text' name='rewrite'id='rewrite' maxlength='490' class='form-control' value='"+reple+"'>";
-		
+	wa = 2;
+	}else if(wa===2){
+		wa=1;
+		location.reload();
+	}
 }
+
 function rewrite(reseq){
-	let rewrite = document.getElementById('rewrite');
-	alert(rewrite.value);
-	let rewritepeid = document.getElementById('againrepeid');
 	
 	
+	let rewrite = document.getElementById('rewrite').value;
+	if(rewrite.length==0){
+		alert('리플을 입력해주세요.');
+		return;
+	}
+	let rewritepeid = document.getElementById('againrepeid'+reseq);
+	 let divText = rewritepeid.textContent;
+	 let repeid = divText;
+	const bosequence=document.getElementById('bosequence').value;
 	
 	
-	
-	
-	
-	
-	
+	let json = {reple:rewrite,repeid:repeid,boSequence:bosequence,reSequence:reseq}
 	
 	
 	$.ajax({
 		type : 'post',
-		url : './rewrite',
+		url : './rewritereple',
 		 dataType : 'json',
 		data : {json:JSON.stringify(json)},
 		contentType : "application/x-www-form-urlencoded; charset=UTF-8",

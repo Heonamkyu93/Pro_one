@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.nk.service.BoardManager;
 
-@WebServlet({ "/boardList","/listPage","/boardInsert","/boardInsertForm","/boardInside","/repleIn","/boardUpdateForm","/boardUpdate" })
+@WebServlet({ "/boardList","/listPage","/boardInsert","/boardInsertForm","/boardInside","/repleIn","/boardUpdateForm","/boardUpdate","/rewritereple","/boarDelete","/repledelete" })
 public class BoardController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -43,7 +43,7 @@ public class BoardController extends HttpServlet {
 			path = bm.boardInside();
 			break;
 		case "/repleIn":
-			path = bm.repleIn();
+			bm.repleIn();
 			break;
 		case "/boardUpdateForm":
 			path = bm.boardUpdateForm();
@@ -51,6 +51,20 @@ public class BoardController extends HttpServlet {
 		case "/boardUpdate":
 			path = bm.boardUpdate();
 			break;
+		case "/rewritereple":
+			bm.rewriteReple();
+			break;
+		case "/boarDelete":
+			path=bm.boarDelete();
+			redifo=2;
+			break;
+		case "/repledelete":
+			path=bm.repledelete();
+			break;
+		
+		
+		
+		
 		}
 
 

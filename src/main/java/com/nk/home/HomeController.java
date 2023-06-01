@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.nk.service.MemberManager;
 
 @WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login",
-		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup","/tes","/resendmail","/certi","/logout"})
+		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup" , "/pwdchange", "/resendmail" , "/certi" , "/logout" , "/beforepwdchangeForm" , "/repwd"})
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -85,12 +85,17 @@ public class HomeController extends HttpServlet {
 		case "/resendmail":		//회원가입 인증번호 다시보내기 
 			mm.resend();
 			break;
-		case "/beforeRepwd":			//비밀번호 변경전 비밀번호 더블체크   구현 x    
-			mm.beforeRepwd();
+		case "/beforepwdchangeForm":			//비밀번호 변경전 비밀번호 더블체크폼으로이동       
+			path=mm.beforepwdchangeForm();
 			break;
-		case"/repwd":				// 비밀번호 변경하는 값 받아와서 디비에 저장  구현 x
-		   mm.repwd();
+		case "/pwdchange":			//비밀번호 변경전 비밀번호 더블체크값받아와서 디비랑비교       
+			path=mm.pwdchange();
+			break;
+		case"/repwd":				// 비밀번호 변경하는 값 받아와서 디비에 저장  
+		   path=mm.repwd();
 		break;
+		
+	
 		
 		}
 

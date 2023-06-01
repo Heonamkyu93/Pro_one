@@ -21,6 +21,12 @@
     <li class="nav-item">
       <a class="nav-link" href="./joinForm">회원가입</a>
     </li>
+     <li class="nav-item">
+      <a class="nav-link" href="#">비밀번호찾기</a>
+    </li>
+     <li class="nav-item">
+      <a class="nav-link" href="#">아이디찾기</a>
+    </li>
   </ul>
 </nav>	
 </header>

@@ -369,7 +369,7 @@ public class MemberManager {
 		}
 	}
 
-	public String beforeRepwd() { // 비밀번호 변경전 더블체크 비밀번호가 동일한지 체크하고
+	public String pwdchange() { // 비밀번호 변경전 더블체크 비밀번호가 동일한지 체크하고 새로운 비밀번호 입력할 form으로 이동
 		Secure sr = new Secure();
 		MemberDao mDao = new MemberDao();
 		String peid = request.getParameter("peid");
@@ -378,29 +378,32 @@ public class MemberManager {
 		String salt = list.get(0).getPeSalt();
 		String hx[] = sr.securePwd(pepwd, salt);
 		if (hx[1].equals(list.get(0).getPePwd())) {
-			return "repwdForm.jsp";
+			request.setAttribute("peid",peid);
+			return "rePwdInsertForm.jsp";
 		} else {
-			request.setAttribute("fail", "실패할경우 jsp에서 처리할거 ");
-			return "beforeRepwdForm.jsp";
+			return "beforePwdChangeForm.jsp";
 		}
 
 	}
 
-	public void repwd() { // 변경할 비밀번호 받아와서 새로등록하는 메소드
+	public String repwd() { // 변경할 비밀번호 받아와서 새로등록하는 메소드
 		MemberDao mDao = new MemberDao();
 		MemberDto mDto = new MemberDto();
 		Secure sr = new Secure();
 		String peid = request.getParameter("peid");
-		String rePwd = request.getParameter("repwd");
-		String hex[] = sr.securePwd(rePwd); // 0이 salt
+		String rePwd = request.getParameter("pepwd");
+		String hex[] = sr.securePwd(rePwd); // 0이 salt  salt까지 다 바꾼다
 		mDto.setPeId(peid);
-		mDto.setPePwd(rePwd);
+		mDto.setPePwd(hex[1]);
 		mDto.setPeSalt(hex[0]);
 		boolean re = mDao.rePwd(mDto);
 		if (re) { // 디비에 저장 성공이면 처리
-
+			logout();
+			System.out.println("성공");
+			return "loginForm.jsp";
 		} else { // 비밀번호 변경이 실패한경우
-
+			System.out.println("실패");
+			return "rePwdInsertForm.jsp";
 		}
 
 	}
@@ -433,4 +436,15 @@ public class MemberManager {
 		return "index.jsp?nav=logoutheader.jsp"; 
 	}
 
+	public String beforepwdchangeForm() {
+		String status=loginCookie();
+		if(!status.equals("login")) {
+		return "loginForm.jsp";	
+		}else {
+			String peid=request.getParameter("peid");
+		request.setAttribute("peid", peid);
+		
+		return "beforePwdChangeForm.jsp";
+	}
+	}
 }

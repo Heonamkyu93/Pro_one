@@ -99,10 +99,10 @@ public class BoardManager {
 			cur = Integer.parseInt(request.getParameter("page"));
 			listco = cur * 10 - 9;
 		}
-		if (request.getParameter("page") != null) {
-			cur = Integer.parseInt(request.getParameter("page"));
-			listco = cur * 10 - 9;
-		}
+		/*
+		 * if (request.getParameter("page") != null) { cur =
+		 * Integer.parseInt(request.getParameter("page")); listco = cur * 10 - 9; }
+		 */
 		ArrayList<BoardDto> al = new ArrayList<>();
 		al = bDao.boardList(listco, listco + 9);
 		String page = makeHtmlPage(cur);
@@ -226,11 +226,17 @@ public class BoardManager {
 
 
 	public String boardInside() throws UnsupportedEncodingException { // 조회수, 파일 , 댓글 다 불러와야함
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp";
+		} else if (loginch.equals("login")) {
 		String bosequence = request.getParameter("bosequence");
 		BoardDao bDao = new BoardDao();
 		LinkedList<BoardDto> ll = bDao.boardInside(bosequence);
 		HttpSession session = request.getSession();
-		
+		if(ll.isEmpty()) { 
+			
+			return "jump.jsp";}
 		if (ll.get(0).getBoTitle() != null) {
 			if(session.getAttribute("peid").equals(ll.get(0).getPeid())) {
 				request.setCharacterEncoding("utf-8");
@@ -255,11 +261,11 @@ public class BoardManager {
 			}
 
 			return "boardInside.jsp";
-
+		}
 		} else {
 			return "index.jsp?nav=logoutheader.jsp";
 		}
-
+		return "index.jsp?nav=logoutheader.jsp";
 	}
 
 	public String fileDownload(LinkedList<BoardDto> ll)  {
@@ -313,7 +319,7 @@ public class BoardManager {
 			 sb.append("</div>");
 			 sb.append("<div class='col-md-1 b'>");
 			 if(peid.equals(k[0])) {
-				 sb.append("<button type='button' class='btn btn-primary btn-sm' onclick='repledelete();'>삭제</button>");  //삭제 수정은둘다 ajax
+				 sb.append("<button type='button' class='btn btn-primary btn-sm' onclick='repledelete("+k[3]+");'>삭제</button>");  //삭제 수정은둘다 ajax
 				 sb.append("<button type='button' class='btn btn-default btn-sm' onclick='writeagain("+k[3]+");'>수정</button>");
 				 sb.append("<button type='button' class='btn btn-default btn-sm' onclick='rewrite("+k[3]+");'>등록</button>");
 			 }
@@ -325,6 +331,15 @@ public class BoardManager {
 	}
 
 	public String repleIn() {
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp";
+		} else if (loginch.equals("login")) {
+		
+		
+		
+		
+		
 		String json=request.getParameter("json");
 	//	JsonObject jobj = (JsonObject) JsonParser.parseString(json);
 		Gson gson = new Gson();
@@ -340,6 +355,7 @@ public class BoardManager {
 		
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
 		}
 		return null;
 	}
@@ -387,14 +403,18 @@ public class BoardManager {
 			try {
 				MultipartRequest multi = new MultipartRequest(request, upPath, size, "utf-8",
 						new DefaultFileRenamePolicy());
-				Enumeration files = multi.getFileNames(); // 배열
+				
 				String bosequence=multi.getParameter("bosequence");
-				String file1=multi.getParameter("prefilenum1");			
+				String file1=multi.getParameter("prefilenum1");	
+				if(file1!=null)
 				fileDeleteCheck(file1,bosequence);
 				String file2=multi.getParameter("prefilenum2");			
+				if(file2!=null)
 				fileDeleteCheck(file2,bosequence);
 				String file3=multi.getParameter("prefilenum3");			
+				if(file3!=null)
 				fileDeleteCheck(file3,bosequence);
+				
 				
 				
 				bDto.setBoSequence(bosequence);
@@ -403,17 +423,14 @@ public class BoardManager {
 				bDto.setPeid(multi.getParameter("peid"));
 				bDto.setBoDate(multi.getParameter("bodate"));
 				bDto.setBoAvailable(1);
-				
 				bDao.boardUpdate(bDto);
-				
-				
+				Enumeration files = multi.getFileNames(); // 배열
 				while (files.hasMoreElements()) {
 					String file = (String) files.nextElement();
 					String boFileSer = multi.getFilesystemName(file); // 서버파일이름
 					String boFileOri = multi.getOriginalFileName(file); // 오리지날이름
 					if (boFileOri == null)
 						continue; // 파일 1,3번째는 업로드하고 2번째를 건너뛸경우
-
 
 					bDto = new BoardDto();
 					// BOARDFILE 테이블에넣을값 //시퀀스값을 구해와야함
@@ -432,7 +449,10 @@ public class BoardManager {
 	}
 		return "jump.jsp";
 	}
-	private String fileDeleteCheck(String file1, String bosequence) {    //delete 붙은 파일을 dao가서 select로 정보 가져오고 그걸로 실제 파일삭제하고나서 디비에 저장된값을 지우자
+	public void fileDeleteCheck(String file1, String bosequence) {    //delete 붙은 파일을 dao가서 select로 정보 가져오고 그걸로 실제 파일삭제하고나서 디비에 저장된값을 지우자
+		
+		
+		
 		String fileIndex;
 		if(file1.contains("delete")) {
 			
@@ -440,7 +460,6 @@ public class BoardManager {
 			fileIndex=deleteOriginal[0];
 			BoardDao bDao = new BoardDao();
 			BoardDto bDto = new BoardDto();
-			
 			bDto=bDao.findFile(fileIndex);
 			
 			if(bosequence.equals(bDto.getBoSequence())) bDao.deleteFile(bDto);
@@ -448,15 +467,76 @@ public class BoardManager {
 			//String upPath = request.getSession().getServletContext().getRealPath("upload")+"//";
 			String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload\\";
 			upPath+=serverName;
-			System.out.println(upPath);
 			File f= new File(upPath);
 			if(f.exists()) {f.delete();}else {
-				return null;
+			 System.out.println("파일없다");}
+	}
+}
+
+
+	public String rewriteReple() {
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp";
+		} else if (loginch.equals("login")) {
+		
+		
+		String json=request.getParameter("json");
+		Gson gson = new Gson();
+		BoardDto bDto = gson.fromJson(json, BoardDto.class);	// repedi , reple , boSequence 가져왔음
+		BoardDao bDao = new BoardDao();
+		boolean re=bDao.rewriteReple(bDto);
+		
+		try(PrintWriter pw = response.getWriter();) {
+			if(re) {
+				pw.print(json);
+			}else {
+				pw.print("실패");
 			}
-			
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
-
 		return null;
-}
+	}
+
+	public String boarDelete() {
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp";
+		} else if (loginch.equals("login")) {
+		
+		String bosequence = request.getParameter("bosequence");
+		String peid = request.getParameter("peid");
+		BoardDao bDao=new BoardDao();
+		bDao.boarDelete(bosequence,peid);
+		
+	}
+		return "jump.jsp";
+	}
+	public String repledelete() {
+		String loginch = loginCookie();
+		if (loginch.equals("logout")) {
+			return "loginForm.jsp";
+		} else if (loginch.equals("login")) {
+		String resequence=request.getParameter("resequence");
+		BoardDao bDao = new BoardDao();
+		boolean re=bDao.repledelete(resequence);
+		try(PrintWriter pw = response.getWriter();) {
+			if(re) {
+				pw.print(resequence);
+			}else {
+				pw.print("실패");
+			}
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		}
+		
+		return null;
+	}
 }

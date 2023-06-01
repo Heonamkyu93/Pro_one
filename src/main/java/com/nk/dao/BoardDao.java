@@ -65,7 +65,8 @@ public class BoardDao {
 
 
 	public ArrayList<BoardDto> boardList(int start, int end) {
-		String sql = "SELECT * FROM ( SELECT ROWNUM NUM ,N. * FROM (SELECT * FROM PEBOARD ORDER BY BODATE DESC) N ) WHERE NUM BETWEEN ? AND ? AND  boavailable = 1";
+		String sql = "SELECT * FROM ( SELECT ROWNUM NUM ,N. * FROM (SELECT * FROM PEBOARD WHERE boavailable = 1 ORDER BY BODATE DESC) N ) WHERE NUM BETWEEN ? AND ? AND  boavailable = 1";
+	//	String sql = "SELECT BOSEQUENCE,BOTITLE,BOCONTENT,PEID,BODATE,BOAVAILABLE FROM (SELECT * FROM PEBOARD ORDER BY BODATE DESC) WHERE ROWNUM BETWEEN ? AND ? AND BOAVAILABLE = 1";
 		ArrayList<BoardDto> al = new ArrayList<>();
 		try {
 			psmt = con.prepareStatement(sql);
@@ -130,11 +131,11 @@ public class BoardDao {
 		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ?";
 		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE,R.reSequence FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ? ORDER BY REDATE ASC";
 		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE,C.BOHIT,C.BOLIKE,C.BODISLIKE FROM PEBOARD P ,boardcount C WHERE p.bosequence= c.bosequence AND P.BOSEQUENCE =? ";
-		String sql ="SELECT * FROM PEBOARD P FULL OUTER JOIN boardcount C ON p.bosequence = c.bosequence FULL OUTER JOIN  boardfile F ON p.bosequence = f.bosequence FULL OUTER JOIN boardreple r ON p.bosequence = r.bosequence where P.BOSEQUENCE =? ORDER BY REDATE ASC"; 
+		String sql ="SELECT * FROM PEBOARD P FULL OUTER JOIN boardcount C ON p.bosequence = c.bosequence FULL OUTER JOIN  boardfile F ON p.bosequence = f.bosequence FULL OUTER JOIN boardreple r ON p.bosequence = r.bosequence where P.BOSEQUENCE =? AND p.boavailable=1 ORDER BY REDATE ASC"; 
 		LinkedList<BoardDto> ll = new LinkedList<>();																															 
 		BoardDto bDto;
 		try {
-			psmt = con.prepareStatement(sql);			// 리스트말고 dto로 바꿀것 
+			psmt = con.prepareStatement(sql);			 
 			psmt.setString(1, bosequence);
 			rs = psmt.executeQuery();
 			while (rs.next()) {
@@ -160,11 +161,10 @@ public class BoardDao {
 				ll.add(bDto);
 				i++;
 			}
-			if (ll.get(0).getBoTitle() != null) {
+			
+			if (ll!= null) {
 				return ll;
-			} else {
-				return null;
-			}
+			} 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -336,15 +336,74 @@ public class BoardDao {
 			psmt.setString(5, bDto.getBoSequence());
 			int re= psmt.executeUpdate();
 			if (re!=0) {
-				System.out.println("업데이트");
+				System.out.println("게시판업데이트");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	
-	
-	
-	
-	
 	}
+
+	public boolean rewriteReple(BoardDto bDto) {
+		String sql = "UPDATE BOARDREPLE SET REPLE=? WHERE REPEID=? AND RESEQUENCE = ? AND BOSEQUENCE =? ";
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1,bDto.getReple());
+			psmt.setString(2, bDto.getRepeid());
+			psmt.setString(3, bDto.getReSequence());
+			psmt.setString(4, bDto.getBoSequence());
+			int re=psmt.executeUpdate();
+			if(re!=0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+	return false;
+	}
+
+	public void boarDelete(String bosequence, String peid) {
+		String sql = "UPDATE PEBOARD SET BOAVAILABLE = 2 WHERE PEID=? AND BOSEQUENCE=?";
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1, peid);
+			psmt.setString(2, bosequence);
+			int re=psmt.executeUpdate();
+			if(re!=0) {
+				System.out.println("게시판삭제처리업데이트성공");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean repledelete(String resequence) {
+			String sql="DELETE FROM BOARDREPLE WHERE RESEQUENCE=?";
+			try {
+				psmt=con.prepareStatement(sql);
+				psmt.setString(1, resequence);
+				int re=psmt.executeUpdate();
+				if(re!=0) {
+					return true;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return false;
+	}
+
+
+	/*
+	 * public void merge() { String
+	 * sql="MERGE INTO BOARDFILE F USING DUAL ON (F.BOSEQUENCE=? AND F.FILESEQ=?) WHEN MATCHED THEN UPDATE SET BOFILEORI=?,BOFILESER=? WHEN NOT MATCHED THEN INSERT (F.BOFILEORI,F.BOFILESER)VALUES(?,?,bofileseq.nextval)"
+	 * ;
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * }
+	 */
+
 }

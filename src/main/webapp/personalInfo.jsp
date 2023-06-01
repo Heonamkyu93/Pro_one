@@ -5,8 +5,10 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<!-- CSS only -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 </head>
 <body>
 <jsp:include page="loginheader.jsp"></jsp:include>
@@ -53,12 +55,19 @@
 
 			</tr>
 			<tr>
-				<th colspan="4"><input type="submit" value="변경"></th>
+				<th colspan="4" align="center"><input type="submit" value="변경"></th>
 
 			</tr>
-
 		</table>
 	</form>
+	
+	<a href="./beforepwdchangeForm?peid=${peid}"><button>비밀번호변경</button></a>
+	
+	
+	
+	
+	
+	
 	<script>
 	var peid = document.getElementById('id');
 	var pename= document.getElementById('pename');
@@ -84,11 +93,6 @@
 		} */
 		
 	}
-	
-	
-	
-	
-	
 	
 	</script>
 	<!-- JavaScript Bundle with Popper -->
