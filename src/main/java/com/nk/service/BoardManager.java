@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -231,6 +233,8 @@ public class BoardManager {
 			return "loginForm.jsp";
 		} else if (loginch.equals("login")) {
 		String bosequence = request.getParameter("bosequence");
+		pageCount(bosequence);
+		
 		BoardDao bDao = new BoardDao();
 		LinkedList<BoardDto> ll = bDao.boardInside(bosequence);
 		HttpSession session = request.getSession();
@@ -266,6 +270,24 @@ public class BoardManager {
 			return "index.jsp?nav=logoutheader.jsp";
 		}
 		return "index.jsp?nav=logoutheader.jsp";
+	}
+
+	public void pageCount(String bosequence) {					// 조회수 처리하는 메소드 만들어야함
+		Cookie[] carray = request.getCookies();
+		if(carray!=null) {
+			for(Cookie cookie :carray) {
+				String ckName = cookie.getName();
+				if(ckName.equals(bosequence)) {
+					cookie.setMaxAge(3600);
+				}else {
+					Cookie cook = new Cookie(bosequence, bosequence);
+					cook.setMaxAge(3600); 
+					response.addCookie(cook);
+					BoardDao bDao= new BoardDao();
+					bDao.hitPlus(bosequence);
+				}
+			}
+		}
 	}
 
 	public String fileDownload(LinkedList<BoardDto> ll)  {
@@ -538,5 +560,86 @@ public class BoardManager {
 		}
 		
 		return null;
+	}
+
+	public String searchData() {
+		String data=request.getParameter("data");
+		BoardDao bDao = new BoardDao();
+		ArrayList<BoardDto> al= bDao.searchData(data);
+		if(al!=null) {
+			String result=makeHtmlSearchData(al);
+			try(PrintWriter pw = response.getWriter();) {
+				pw.print(result);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	private String makeHtmlSearchData(ArrayList<BoardDto> al) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<table class='table table-hover'>");
+		sb.append("<tr>");
+		sb.append("<th>");
+		sb.append("글번호");
+		sb.append("</th>");
+		sb.append("<th>");
+		sb.append("제목");
+		sb.append("</th>");
+		sb.append("<th>");
+		sb.append("작성자");
+		sb.append("</th>");
+		sb.append("<th>");
+		sb.append("작성일");
+		sb.append("</th>");
+		sb.append("</tr>");
+		for (int i = 0; i < al.size(); i++) {
+			sb.append("<tr>");
+			sb.append("<th>");
+			sb.append(al.get(i).getBoSequence());
+			sb.append("</th>");
+			sb.append("<th>");
+			sb.append("<a href='./boardInside?bosequence=");
+			sb.append(al.get(i).getBoSequence());
+			sb.append("'>");
+			sb.append(al.get(i).getBoTitle());
+			sb.append("</a>");
+			sb.append("</th>");
+			sb.append("<th>");
+			sb.append(al.get(i).getPeid());
+			sb.append("</th>");
+			sb.append("<th>");
+			sb.append(al.get(i).getBoDate());
+			sb.append("</th>");
+			sb.append("</tr>");
+		}
+
+		sb.append("</table>");
+		
+		return sb.toString();
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
+		 * 
+		 * for(BoardDto bDto:al) {
+		 * 
+		 * 
+		 * 
+		 * }
+		 */
+		
+		
+		
+		
+		
+		
+		
 	}
 }

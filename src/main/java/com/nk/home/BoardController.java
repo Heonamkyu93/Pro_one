@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.nk.service.BoardManager;
 
-@WebServlet({ "/boardList","/listPage","/boardInsert","/boardInsertForm","/boardInside","/repleIn","/boardUpdateForm","/boardUpdate","/rewritereple","/boarDelete","/repledelete" })
+@WebServlet({ "/boardList","/listPage","/boardInsert","/boardInsertForm","/boardInside","/repleIn","/boardUpdateForm","/boardUpdate","/rewritereple","/boarDelete","/repledelete" ,"/searchdata"})
 public class BoardController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -60,6 +60,9 @@ public class BoardController extends HttpServlet {
 			break;
 		case "/repledelete":
 			path=bm.repledelete();
+			break;
+		case "/searchdata":
+			path=bm.searchData();
 			break;
 		
 		

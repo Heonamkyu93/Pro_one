@@ -75,14 +75,7 @@ public class MemberDao {
 	
 	
 	public boolean memberInsert(MemberDto mDto) {
-		String sql = "INSERT INTO pemember VALUES (?,?,?,?,?,?,PENUMERINGSEQ.NEXTVAL,'1','2',?,SYSDATE)"; // 0을 값으로 준건
-																											// pestatus인데
-																											// 이걸로 회원의
-																											// 상태를 파악
-																											// 1이면 정상회원
-																											// 0이면 탈퇴회원
-																											// 2면 메일인증이
-																											// 안된 회원
+		String sql = "INSERT INTO pemember VALUES (PENUMERINGSEQ.NEXTVAL,?,?,?,?,?,?,1,2,sysdate,?)";
 		try {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, mDto.getPeId());
@@ -117,7 +110,7 @@ public class MemberDao {
 		return false;
 	}
 
-	public int memberLogin(MemberDto mDto) {
+	public int memberLogin(MemberDto mDto) {			//이거 잘못짰다 비교하는거 서비스에서 했어야 했는데
 		String sql = "SELECT * FROM PEMEMBER WHERE ID=(?)";
 		try {
 			psmt = con.prepareStatement(sql);
@@ -257,38 +250,26 @@ public class MemberDao {
 
 	}
 
-	public boolean emaildup(String pemail) {
-		String sql = "SELECT PEEMAIL FROM PEMEMBER WHERE PEEMAIL=? ";
+	public MemberDto emaildup(String pemail) {
+		String sql = "SELECT * FROM PEMEMBER WHERE PEEMAIL=? ";
+		MemberDto mDto = new MemberDto();
 		try {
 			psmt = con.prepareStatement(sql);
 			psmt.setString(1, pemail);
 			rs = psmt.executeQuery();
 			if (rs.next()) {
-				return true;
+				mDto.setPeId(rs.getString("peid"));
+				mDto.setPeSalt(rs.getString("pesalt"));
+				mDto.setPestatus(rs.getString("pestatus"));
+				return mDto;
 			} else {
-				return false;
+				return null;
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			if (rs != null)
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			if (psmt != null)
-				try {
-					psmt.close();
-				} catch (Exception e) {
-				}
-			if (con != null)
-				try {
-					con.close();
-				} catch (Exception e) {
-				}
-		}
-		return false;
+		} 
+		return null;
 	}
 
 	public boolean mialChekFin(String pemail) {
@@ -340,23 +321,7 @@ public class MemberDao {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			if (rs != null)
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			if (psmt != null)
-				try {
-					psmt.close();
-				} catch (Exception e) {
-				}
-			if (con != null)
-				try {
-					con.close();
-				} catch (Exception e) {
-				}
-		}
+		} 
 		return false;
 	}
 
@@ -398,7 +363,23 @@ public class MemberDao {
 	}
 
 
-
+public void close() {
+		if (rs != null)
+			try {
+				rs.close();
+			} catch (Exception e) {
+			}
+		if (psmt != null)
+			try {
+				psmt.close();
+			} catch (Exception e) {
+			}
+		if (con != null)
+			try {
+				con.close();
+			} catch (Exception e) {
+			}
+	}
 
 
 

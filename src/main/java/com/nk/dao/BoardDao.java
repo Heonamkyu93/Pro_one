@@ -278,7 +278,6 @@ public class BoardDao {
 			}
 			return ll;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -391,6 +390,40 @@ public class BoardDao {
 				e.printStackTrace();
 			}
 			return false;
+	}
+
+	public ArrayList<BoardDto> searchData(String data) {
+		String sql = "SELECT * FROM PEBOARD WHERE BOAVAILABLE=1 AND BOTITLE LIKE '%'||?||'%' ORDER BY BODATE DESC ";   // setString 에서 "%"+data+"%" 이런식으로도 처리가능  
+		ArrayList<BoardDto> al = new ArrayList<>();
+		BoardDto bDto;
+		try {
+			psmt=con.prepareStatement(sql);
+			psmt.setString(1,data);
+			rs=psmt.executeQuery();
+			while(rs.next()) {
+			bDto=new BoardDto();
+			bDto.setBoTitle(rs.getString("botitle"));
+			bDto.setBoContent(rs.getString("bocontent"));
+			bDto.setBoSequence(rs.getString("bosequence"));
+			bDto.setBoDate(rs.getString("bodate"));
+			bDto.setPeid(rs.getString("peid"));
+			bDto.setBoAvailable(rs.getInt("boavailable"));
+			al.add(bDto);
+			}
+			if(al!=null) {
+				return al;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+
+	public void hitPlus(String bosequence) {
+		String sql="UPDATE FROM BOARDCOUNT SET BOHIT 여기서 더하기 WHERE BOSEQUENCE = ?";
+		
+		
 	}
 
 

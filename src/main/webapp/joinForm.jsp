@@ -11,9 +11,8 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	
 </head>
-<body>
+<body onload="al();">
 <jsp:include page="logoutheader.jsp"></jsp:include>
-	
 	<section>
 	
 	<div class="container">
@@ -95,15 +94,6 @@
 									<br> <strong id='em2'>중복확인은 필수입니다.</strong></td>
 							</tr>
 
-							<tr align="left">
-								<td align="left"><font size=4>성&nbsp;&nbsp;별&nbsp;:</font></td>
-								<td colspan="2">남&nbsp;자&nbsp;:&nbsp;<input
-									class="form-check-input" type="radio" name="pegender" checked
-									id="pegender" value="m"> 여&nbsp;자&nbsp;:&nbsp;<input
-									class="form-check-input" type="radio" name="pegender"
-									id="pegender" value="f">
-								</td>
-							</tr>
 							<tr align="center">
 								<td colspan="4"><input type="submit"
 									class="btn btn-danger btn-lg" value="회 원 가 입"></td>
@@ -298,6 +288,7 @@
 			}
 
 		}
+	
 	</script>
 	
 </body>

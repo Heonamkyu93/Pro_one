@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="C:/tomcat/ja/javax.mail-1.6.2.jar"/>
 	<classpathentry kind="lib" path="C:/tomcat/ja/ojdbc11.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gson-2.10.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/hi/Downloads/jstl-1.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

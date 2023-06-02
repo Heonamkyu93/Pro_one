@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.nk.service.MemberManager;
 
 @WebServlet({ "/index", "/loginForm", "/joinForm", "/dupliCheck", "/memberInsert", "/memberList", "/login",
-		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup" , "/pwdchange", "/resendmail" , "/certi" , "/logout" , "/beforepwdchangeForm" , "/repwd"})
+		"/beforeWithdrawalCheck", "/withdrawalCheck", "/memberInfoUpdate", "/memberInfoUpdateFrom", "/emaildup" , "/pwdchange", 
+		"/resendmail" , "/certi" , "/logout" , "/beforepwdchangeForm" , "/repwd","/findidemailch","/findIdForm","/findpwdemailch","/findPwdForm"})
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -94,9 +95,20 @@ public class HomeController extends HttpServlet {
 		case"/repwd":				// 비밀번호 변경하는 값 받아와서 디비에 저장  
 		   path=mm.repwd();
 		break;
-		
-	
-		
+		case"/findidemailch":				// 아이디 찾기 가입한 계정에 메일이 있는지 확인   
+			  mm.findidemailch();
+			break;
+		case"/findIdForm":				// 아이디 찾기 이메일입력폼으로이동   
+			 path =mm.findIdForm();
+			 selforedi = 2;
+			break;
+		case"/findpwdemailch":				// 비밀번호 찾기 아이디 이메일 입력후 성공하면 임시비밀번호 메일로 쏴주기   
+			 path =mm.findpwdemailch();
+			break;
+		case"/findPwdForm":				// 비밀번호 찾기 아이디,이메일입력폼으로이동   
+			 path =mm.findPwdForm();
+			 selforedi = 2;
+			break;
 		}
 
 		if (path != null && selforedi == 1) {

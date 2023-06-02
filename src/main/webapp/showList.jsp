@@ -22,15 +22,22 @@
 </head>
 <body>
 <jsp:include page="loginheader.jsp"></jsp:include>
+	<div class='container'>
+	<div class='row'>
+	<div class='col-md-4'></div>
+	<div class='col-md-4'></div>
+	<div class='col-md-4'></div>
+	</div>
+	</div>
 	<section>
 	${mList}
 	<div class='container'id='p'>
 	<div class='row'>
-	<div class='com-md-5'></div>
-	<div class='com-md-2'>
+	<div class='col-md-5'></div>
+	<div class='col-md-2'>
 	${mpage}
 	</div>
-	<div class='com-md-5'></div>
+	<div class='col-md-5'></div>
 	</div>
 	</div>
 	</section>
