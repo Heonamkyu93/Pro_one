@@ -8,7 +8,6 @@ public class BoardDto {
 	private String boDate;
 	private int boAvailable;
 	private String boSequence;
-	private int boHit;
 	private int boLike;
 	private int bodisLike;
 	private String boFileOri; 
@@ -56,13 +55,6 @@ public class BoardDto {
 		this.redate = redate;
 	}
 
-	public int getBoHit() {
-		return boHit;
-	}
-
-	public void setBoHit(int boHit) {
-		this.boHit = boHit;
-	}
 
 	public int getBoLike() {
 		return boLike;

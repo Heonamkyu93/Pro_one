@@ -151,7 +151,6 @@ public class BoardDao {
 				bDto.setBoFileOri(rs.getString("BOFILEORI"));
 				bDto.setBoFileSer(rs.getString("BOFILESER"));
 				bDto.setFileseq(rs.getString("fileseq"));
-				bDto.setBoHit(rs.getInt("BOHIT"));
 				bDto.setBoLike(rs.getInt("BOLIKE"));
 				bDto.setBodisLike(rs.getInt("BODISLIKE"));
 				bDto.setReSequence(rs.getString("reSequence"));
@@ -206,19 +205,6 @@ public class BoardDao {
 			}
 	}
 
-	/*
-	 * public void getReple(String bosequence) { String sql =
-	 * "select * from boardreple where bosequence=? order by redate desc;";
-	 * LinkedList< BoardDto> ll = new LinkedList<>(); BoardDto bDto; try {
-	 * psmt=con.prepareStatement(sql); psmt.setString(1, bosequence);
-	 * rs=psmt.executeQuery(); while(rs.next()) { bDto = new BoardDto();
-	 * bDto.setReSequence(rs.getString("reSequence"));
-	 * bDto.setRepeid(rs.getString("REPEID")); bDto.setReple(rs.getString("REPLE"));
-	 * bDto.setRedate(rs.getString("REDATE")); } } catch (SQLException e) {
-	 * e.printStackTrace(); }
-	 * 
-	 * }
-	 */
 	
 	public boolean repleIn(BoardDto bDto) {
 		String sql = "INSERT INTO BOARDREPLE VALUES(?,?,?,sysdate,borepleseq.nextval)";
@@ -420,11 +406,6 @@ public class BoardDao {
 		
 	}
 
-	public void hitPlus(String bosequence) {
-		String sql="UPDATE FROM BOARDCOUNT SET BOHIT 여기서 더하기 WHERE BOSEQUENCE = ?";
-		
-		
-	}
 
 
 	/*

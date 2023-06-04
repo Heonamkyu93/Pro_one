@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -41,7 +40,8 @@ public class BoardManager {
 		BoardDto bt = new BoardDto();
 		BoardDto bt2;
 	//	String upPath = request.getSession().getServletContext().getRealPath("upload");
-		String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+	//	String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+		String upPath = "C:\\ide\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
 		int size = 10 * 1024 * 1024;
 		// PEBOARD 테이블에 넣을값
 		File f = new File(upPath);
@@ -227,19 +227,16 @@ public class BoardManager {
 	}
 
 
-	public String boardInside() throws UnsupportedEncodingException { // 조회수, 파일 , 댓글 다 불러와야함
+	public String boardInside() throws UnsupportedEncodingException { // 조회수, 파일 , 댓글 다 불러와야함  쿼리로 넘기고 리다이렉트로 짰어야 했는데 이미 늦었다..
 		String loginch = loginCookie();
 		if (loginch.equals("logout")) {
 			return "loginForm.jsp";
 		} else if (loginch.equals("login")) {
 		String bosequence = request.getParameter("bosequence");
-		pageCount(bosequence);
-		
 		BoardDao bDao = new BoardDao();
 		LinkedList<BoardDto> ll = bDao.boardInside(bosequence);
 		HttpSession session = request.getSession();
 		if(ll.isEmpty()) { 
-			
 			return "jump.jsp";}
 		if (ll.get(0).getBoTitle() != null) {
 			if(session.getAttribute("peid").equals(ll.get(0).getPeid())) {
@@ -254,6 +251,10 @@ public class BoardManager {
 			request.setAttribute("botitle", ll.get(0).getBoTitle());
 			request.setAttribute("bodate", ll.get(0).getBoDate());
 			request.setAttribute("bosequence", ll.get(0).getBoSequence());
+			
+			
+			
+			
 			if (ll.get(0).getReSequence() != null) { // 리플시퀀스가 널이아니면 댓글가져오기
 				String reple = makeHtmlReple(ll);
 				request.setAttribute("reple", reple);
@@ -263,7 +264,6 @@ public class BoardManager {
 				
 				request.setAttribute("file",fileDownload(ll)); 
 			}
-
 			return "boardInside.jsp";
 		}
 		} else {
@@ -272,23 +272,6 @@ public class BoardManager {
 		return "index.jsp?nav=logoutheader.jsp";
 	}
 
-	public void pageCount(String bosequence) {					// 조회수 처리하는 메소드 만들어야함
-		Cookie[] carray = request.getCookies();
-		if(carray!=null) {
-			for(Cookie cookie :carray) {
-				String ckName = cookie.getName();
-				if(ckName.equals(bosequence)) {
-					cookie.setMaxAge(3600);
-				}else {
-					Cookie cook = new Cookie(bosequence, bosequence);
-					cook.setMaxAge(3600); 
-					response.addCookie(cook);
-					BoardDao bDao= new BoardDao();
-					bDao.hitPlus(bosequence);
-				}
-			}
-		}
-	}
 
 	public String fileDownload(LinkedList<BoardDto> ll)  {
 		StringBuilder sb = new StringBuilder();	
@@ -304,6 +287,7 @@ public class BoardManager {
 			String removeDuple = iter.next();
 			String k[]=removeDuple.toString().split("ωμέриллицаعَبْد ٱللَّٰه ٱبْن عَبْد ٱلْ䨺",3);
 			sb.append("<div class='col-md-4' id='prediv"+i+"'>");
+		//	sb.append("<a download href='"+"\\Pro_one\\upload" + "\\"+k[1]+"' id='prefile"+i+"' onclick='pre(this);'>");
 			sb.append("<a download href='"+"\\Pro_one\\upload" + "\\"+k[1]+"' id='prefile"+i+"' onclick='pre(this);'>");
 			sb.append(k[0]);
 			sb.append("</a>");
@@ -412,7 +396,8 @@ public class BoardManager {
 			return "loginForm.jsp";
 		} else if (loginch.equals("login")) {
 			//String upPath = request.getSession().getServletContext().getRealPath("upload");
-			String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+			//String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+			String upPath = "C:\\ide\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
 			int size = 10 * 1024 * 1024;
 			// PEBOARD 테이블에 넣을값
 			File f = new File(upPath);

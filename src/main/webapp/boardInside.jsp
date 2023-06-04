@@ -95,13 +95,14 @@ border: 1px solid #E6E6E6;
 		<div class='row'>${file}</div>	
 <br><br>
 			<div class="col-md-12 c">
-				<p>${bocontent}</p>
+				<p>${bocontent}
+				</p>
 			</div>
 		</div>
 			<div class='row '>
 			<div class="col-md-3 b"></div>
 				<div class="col-md-6 b">
-				좋아요 싫어요 찍을곳 조회수 
+				좋아요 싫어요 
 				</div>
 				<div class='col-md-3 b'>${update}&nbsp;&nbsp;&nbsp;&nbsp; ${delete}</div>
 				</div>
@@ -125,6 +126,13 @@ ${reple}
 </div>
 
 <script>
+
+
+
+
+
+
+
 function repledelete(reseq){
 	
 	$.ajax({
@@ -190,6 +198,7 @@ function rewrite(reseq){
 }
 window.onload = function() {
 	time();
+	
 }
 function time() {
 	var today = new Date();
