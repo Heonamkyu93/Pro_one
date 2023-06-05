@@ -101,10 +101,10 @@ border: 1px solid #E6E6E6;
 		</div>
 			<div class='row '>
 			<div class="col-md-3 b"></div>
-				<div class="col-md-6 b">
-				좋아요 싫어요 
+				<div class="col-md-6 b" align="center">
+				 ${update}&nbsp;&nbsp;&nbsp;&nbsp; ${delete}
 				</div>
-				<div class='col-md-3 b'>${update}&nbsp;&nbsp;&nbsp;&nbsp; ${delete}</div>
+				<div class='col-md-3 b'></div>
 				</div>
 		
 	</div>

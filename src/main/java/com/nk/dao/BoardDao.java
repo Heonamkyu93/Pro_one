@@ -131,7 +131,7 @@ public class BoardDao {
 		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ?";
 		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE ,F.BOFILEORI ,F.BOFILESER ,C.BOHIT,C.BOLIKE,C.BODISLIKE ,R.REPEID,R.REPLE,R.REDATE,R.reSequence FROM PEBOARD P , BOARDFILE F , boardcount C , boardreple R WHERE p.bosequence=f.bosequence AND C.BOSEQUENCE=F.BOSEQUENCE AND c.bosequence = r.bosequence AND P.BOSEQUENCE = ? ORDER BY REDATE ASC";
 		// "SELECT P.BOSEQUENCE , P.BOTITLE , P.BOCONTENT , P.PEID ,P.BODATE,C.BOHIT,C.BOLIKE,C.BODISLIKE FROM PEBOARD P ,boardcount C WHERE p.bosequence= c.bosequence AND P.BOSEQUENCE =? ";
-		String sql ="SELECT * FROM PEBOARD P FULL OUTER JOIN boardcount C ON p.bosequence = c.bosequence FULL OUTER JOIN  boardfile F ON p.bosequence = f.bosequence FULL OUTER JOIN boardreple r ON p.bosequence = r.bosequence where P.BOSEQUENCE =? AND p.boavailable=1 ORDER BY REDATE ASC"; 
+		String sql ="SELECT * FROM PEBOARD P FULL OUTER JOIN boardcount C ON p.bosequence = c.bosequence FULL OUTER JOIN  boardfile F ON p.bosequence = f.bosequence FULL OUTER JOIN boardreple r ON p.bosequence = r.bosequence FULL OUTER JOIN BOARDCOUNTUSER U ON P.bosequence = U.bosequence where P.BOSEQUENCE =? AND p.boavailable=1 ORDER BY REDATE ASC"; 
 		LinkedList<BoardDto> ll = new LinkedList<>();																															 
 		BoardDto bDto;
 		try {

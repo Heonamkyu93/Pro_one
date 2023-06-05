@@ -15,7 +15,13 @@
 <body>
 
 <jsp:include page="${param.nav}"></jsp:include>
+<section>
 
+<img src="\img\smile.png">
+
+
+
+</section>
 
 <jsp:include page="footer.jsp"></jsp:include>
 <!-- JavaScript Bundle with Popper -->

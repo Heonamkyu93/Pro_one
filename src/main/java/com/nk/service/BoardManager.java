@@ -40,8 +40,8 @@ public class BoardManager {
 		BoardDto bt = new BoardDto();
 		BoardDto bt2;
 	//	String upPath = request.getSession().getServletContext().getRealPath("upload");
-	//	String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
-		String upPath = "C:\\ide\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+		String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+	//	String upPath = "C:\\ide\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
 		int size = 10 * 1024 * 1024;
 		// PEBOARD 테이블에 넣을값
 		File f = new File(upPath);
@@ -396,8 +396,8 @@ public class BoardManager {
 			return "loginForm.jsp";
 		} else if (loginch.equals("login")) {
 			//String upPath = request.getSession().getServletContext().getRealPath("upload");
-			//String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
-			String upPath = "C:\\ide\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+			String upPath = "C:\\tomcat\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
+		//	String upPath = "C:\\ide\\apache-tomcat-9.0.74\\webapps\\Pro_one\\upload";
 			int size = 10 * 1024 * 1024;
 			// PEBOARD 테이블에 넣을값
 			File f = new File(upPath);
