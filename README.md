@@ -11,8 +11,9 @@
 </ul>
 <h3>사용기술</h3>
 <ul>
+ <li>Java , Oracle</li>
 <li>JSP , Javascript , CSS , BootStrap </li>
-<li>Java , Oracle</li>
+
 </ul>
 <br/>
 <h4>개발 의도</h4>
